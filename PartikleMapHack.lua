@@ -1,7 +1,7 @@
 local MiniMapDraw = {}
-MiniMapDraw.TrigerActiv = Menu.AddOptionBool({"Kostya12rus", "MiniMapDraw"}, "Off/On", true)
-MiniMapDraw.IconSize = Menu.AddOptionSlider({"Kostya12rus", "MiniMapDraw"}, "Size minimap icon", 500, 1500, 800)
-MiniMapDraw.HeroIconOnly = Menu.AddOptionBool({"Kostya12rus", "MiniMapDraw"}, "Only Hero icon", false)
+MiniMapDraw.TrigerActiv = Menu.AddOptionBool({"TheCrazy88", "MiniMapDraw"}, "Off/On", true)
+MiniMapDraw.IconSize = Menu.AddOptionSlider({"TheCrazy88", "MiniMapDraw"}, "Size minimap icon", 500, 1500, 800)
+MiniMapDraw.HeroIconOnly = Menu.AddOptionBool({"TheCrazy88", "MiniMapDraw"}, "Only Hero icon", false)
 
 function MiniMapDraw.OnParticleCreate(particle)
 	if not Menu.IsEnabled(MiniMapDraw.TrigerActiv) then return end
