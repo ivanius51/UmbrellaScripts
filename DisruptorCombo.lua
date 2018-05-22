@@ -109,9 +109,9 @@ function DisruptorCombo.go_back_to_base()
 	local glimpse = NPC.GetAbility(Heroes.GetLocal(), "disruptor_glimpse")
 	if glimpse and Ability.IsReady(glimpse) then
 		for i,npcforback in pairs(DisruptorCombo.need_tp_back) do
-			if npcforback[2] >= GameRules.GetGameTime() and DisruptorCombo.timer_oreder <= GameRules.GetGameTime() then
-				if npcforback[1] and Entity.IsAlive(npcforback[1]) and not Entity.IsDormant(npcforback[1]) then
-					DisruptorCombo.timer_oreder = GameRules.GetGameTime() + 1
+			if npcforback[2] >= GameRules.GetGameTime() then
+				if npcforback[1] ~= nil and npcforback[1] ~= 0 and NPCs.Contains(npcforback[1]) and Entity.IsAlive(npcforback[1]) and not Entity.IsDormant(npcforback[1]) then
+					DisruptorCombo.timer_oreder = GameRules.GetGameTime() + 5
 					Ability.CastTarget(glimpse,npcforback[1])
 				end
 			else
