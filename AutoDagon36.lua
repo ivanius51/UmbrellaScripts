@@ -22,7 +22,6 @@ function AutoDagon122112.OnUpdate()
 			if hero ~= nil and hero ~= 0 and NPCs.Contains(hero) and NPC.IsEntityInRange(myHero,hero,Ability.GetCastRange(dagon)) and not Entity.IsSameTeam(hero,myHero) then
 				if Entity.IsAlive(hero) and not Entity.IsDormant(hero) and not NPC.IsIllusion(hero) and AutoDagon122112.IsHasGuard(hero) == "nil" then
 					local totaldomage = (damageDagon * NPC.GetMagicalArmorDamageMultiplier(hero)) * (BuffDmg/100+1)
-					Log.Write(totaldomage)
 					if Entity.GetHealth(hero) <= totaldomage then
 						Ability.CastTarget(dagon, hero)
 					end
