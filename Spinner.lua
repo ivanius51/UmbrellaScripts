@@ -10,20 +10,20 @@ function Spinner.OnUpdate()
 	if Menu.IsKeyDown(Spinner.optionKey) then
 		if Menu.GetValue(Spinner.typemove) == 0 then
 			if tick <= GameRules.GetGameTime() then
-				NPC.MoveTo(myHero,Spinner.PositionAngle(myHero,160,1))
+				NPC.MoveTo(myHero,Spinner.PositionAngle(myHero,160,1),false,false)
 				tick = GameRules.GetGameTime() + 0.05
 			end
 		end
 		if Menu.GetValue(Spinner.typemove) == 1 then
 			if tick <= GameRules.GetGameTime() then
-				NPC.MoveTo(myHero,Spinner.PositionAngle(myHero,100,40))
+				NPC.MoveTo(myHero,Spinner.PositionAngle(myHero,100,40),false,false)
 				tick = GameRules.GetGameTime() + 0.15
 			end
 		end
 		if Menu.GetValue(Spinner.typemove) == 2 then
 			local minitable = {75,-120}
 			if tick <= GameRules.GetGameTime() then
-				NPC.MoveTo(myHero,Spinner.PositionAngle(myHero,minitable[trigerfor3],1))
+				NPC.MoveTo(myHero,Spinner.PositionAngle(myHero,minitable[trigerfor3],1),false,false)
 				tick = GameRules.GetGameTime() + 0.1
 				trigerfor3 = trigerfor3 + 1
 				if trigerfor3 > 2 then trigerfor3 = 1 end
