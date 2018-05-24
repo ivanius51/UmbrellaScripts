@@ -42,20 +42,41 @@ function AutoDagon122112.GetDamageDagon(mynpc,target,dmg)
 	local mana_shield = NPC.GetAbility(target, "medusa_mana_shield")
 	if mana_shield and Ability.GetToggleState(mana_shield) then
 		-- local damage_per_mana = 1.3 + 0.3 * Ability.GetLevel(mana_shield) --идите нахуй Ability.GetLevelSpecialValueForFloat(mana_shield,"damage_per_mana") не дает верного ответа
-		-- local GetTakeDamage = damage_per_mana * NPC.GetMana(target)
-		-- local DamageForShiald = totaldomage / damage_per_mana
-		-- if GetTakeDamage < totaldomage then
-			-- local var1 = GetTakeDamage-totaldomage
-			-- totaldomage = var1 + GetTakeDamage/damage_per_mana
+		-- local DamageForShiald = totaldomage * 0.6 - (damage_per_mana * NPC.GetMana(target))
+		-- if damage_per_mana * NPC.GetMana(target) > totaldomage * 0.6 then
+			-- totaldomage = totaldomage * 0.6
 		-- else
 			totaldomage = totaldomage * 0.4
 		-- end
-		--ПОТОМ ДОДЕЛАЮ, ХУЯ Я КЛАЛ
 	end
 	if NPC.HasModifier(target,"modifier_ursa_enrage") then
 		totaldomage = totaldomage * 0.2
 	end
+	local bristleback = NPC.GetAbility(target, "bristleback_bristleback")
+	if bristleback and Ability.GetLevel(bristleback) ~= 0 then -- углы полная хуйня, пошли нахуй, ненавижу вас
+		local vectortarget = Entity.GetAbsOrigin(target)
+		local vectormy = Entity.GetAbsOrigin(Heroes.GetLocal())
+		local taorig = Entity.GetRotation(target):GetYaw()
+		local orig = -1 * (AutoDagon122112.Atan2(vectortarget:GetY()-vectormy:GetY(), vectortarget:GetX()-vectormy:GetX())/math.pi*180) + taorig
+		if orig < 0 then orig = 360 + orig end
+		if 110 < orig and orig < 250 then
+			totaldomage = totaldomage
+		elseif (70 < orig and orig <= 110) or (250 <= orig and orig < 290) then
+			totaldomage = totaldomage * (1 - Ability.GetLevelSpecialValueFor(bristleback,"side_damage_reduction")/100)
+		elseif (0 < orig and orig <= 70) or (290 <= orig and orig < 360) then
+			totaldomage = totaldomage * (1 - Ability.GetLevelSpecialValueFor(bristleback,"back_damage_reduction")/100)
+		end
+	end
 	return totaldomage
+end
+
+function AutoDagon122112.Atan2(y,x) -- спс луа что нету math.atan2()
+	if x > 0 then return math.atan(y/x) end
+	if x < 0 and y >= 0 then return math.atan(y/x) + math.pi end
+	if x < 0 and y < 0 then return math.atan(y/x) - math.pi end
+	if x == 0 and y > 0 then return math.pi/2 end
+	if x == 0 and y < 0 then return -1*(math.pi/2) end
+	if x == 0 and y == 0 then return 0 end
 end
 
 function AutoDagon122112.IsHasGuard(npc)
