@@ -1,5 +1,5 @@
 local AutoDagon122112 = {}
-AutoDagon122112.optionEnable = Menu.AddOptionBool({"TheCrazy88","AutoDagon"},"Activation", true)
+AutoDagon122112.optionEnable = Menu.AddOptionBool({"TheCrazy88"},"AutoDagon", true)
 
 function AutoDagon122112.OnUpdate()
 	if not Menu.IsEnabled(AutoDagon122112.optionEnable) then return end
