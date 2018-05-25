@@ -4,7 +4,7 @@ EconomPanel.optionEnable = Menu.AddOptionBool		({"TheCrazy88", "Economic Panel"}
 EconomPanel.TeamInfo = Menu.AddOptionBool			({"TheCrazy88", "Economic Panel"}, "Проценты команд", true)
 EconomPanel.posx = Menu.AddOptionSlider				({"TheCrazy88", "Economic Panel", "Настройки"}, "Положение X", 1,sizescrx-1,500)
 EconomPanel.posy = Menu.AddOptionSlider				({"TheCrazy88", "Economic Panel", "Настройки"}, "Положение Y", 1,sizescry-1,500)
-EconomPanel.sizeIcon = Menu.AddOptionSlider			({"TheCrazy88", "Economic Panel", "Настройки"}, "Размер", 200,255,300)
+EconomPanel.sizeIcon = Menu.AddOptionSlider			({"TheCrazy88", "Economic Panel", "Настройки"}, "Размер", 20,300,50)
 EconomPanel.visibility = Menu.AddOptionSlider		({"TheCrazy88", "Economic Panel", "Настройки"}, "Прозрачность", 50,255,255)
 
 function EconomPanel.OnUpdate()
