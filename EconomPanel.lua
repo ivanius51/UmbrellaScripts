@@ -47,7 +47,7 @@ function EconomPanel.OnUpdate()
 		end
 	end
 	table.sort(EconomPanel.player, function(t1, t2) return t1[2] > t2[2] end)
-	if #EconomPanel.player >= 1 then
+	if #EconomPanel.player >= 1 and not canDraw then
 		canDraw = true
 	end
 end
@@ -84,8 +84,6 @@ function EconomPanel.OnDraw()
 					enteamcoint = enteamcoint + hero[2]
 				end
 				Renderer.DrawFilledRect(math.ceil(xpos+1),math.ceil(ypos+1),math.ceil(sizeamountx*prochent),math.ceil(sizeBary-2))
-				Renderer.SetDrawColor(0,0,0,visibility)
-				Renderer.DrawOutlineRect(math.ceil(xpos),math.ceil(ypos),math.ceil(sizeamountx*prochent)+2,math.ceil(sizeBary))
 				Renderer.SetDrawColor(0,255,255,visibility)
 				Renderer.DrawText(EconomPanel.Font, math.ceil(xpos + 10), math.ceil(ypos+1), hero[2], 1)
 				ypos = ypos + sizeBary
@@ -96,8 +94,6 @@ function EconomPanel.OnDraw()
 			local procent = myteamcoint/((myteamcoint+enteamcoint)/100)
 			ypos = Menu.GetValue(EconomPanel.posy) - sizeBary - 2
 			xpos = xpos + sizeBarx
-			Renderer.SetDrawColor(0,0,0,visibility)
-			Renderer.DrawOutlineRect(math.ceil(xpos),math.ceil(ypos),math.ceil(sizeamountx*2)+2,math.ceil(sizeBary))
 			Renderer.SetDrawColor(100,0,0,visibility)
 			Renderer.DrawFilledRect(math.ceil(xpos+1+(sizeamountx*procent/100*2)),math.ceil(ypos+1),math.ceil(sizeamountx*(100-procent)/100*2),math.ceil(sizeBary-2))
 			Renderer.SetDrawColor(0,100,0,visibility)

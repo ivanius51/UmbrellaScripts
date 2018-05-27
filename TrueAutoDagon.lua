@@ -39,21 +39,90 @@ function AutoDagon122112.GetDamageDagon(mynpc,target,dmg)
 		BuffDmg = BuffDmg + 10 
 	end
 	local totaldomage = (dmg * NPC.GetMagicalArmorDamageMultiplier(target)) * (BuffDmg/100+1)
+	if NPC.HasModifier(target,"modifier_item_hood_of_defiance_barrier") then
+		totaldomage = totaldomage - 325
+	end
+	if NPC.HasModifier(target,"modifier_item_pipe_barrier") then
+		totaldomage = totaldomage - 400
+	end
+	if NPC.HasModifier(target,"modifier_ember_spirit_flame_guard") then
+		local flame_guard = NPC.GetAbility(target, "ember_spirit_flame_guard")
+		if flame_guard then
+			totaldomage = totaldomage - Ability.GetLevelSpecialValueFor(flame_guard,"absorb_amount")
+			local moredmgskill = NPC.GetAbility(target, "special_bonus_unique_ember_spirit_1")
+			if moredmgskill and Ability.GetLevel(moredmgskill) ~= 0 then
+				totaldomage = totaldomage - Ability.GetLevelSpecialValueFor(moredmgskill,"value")
+			end
+		else
+			for _,hero in pairs(Heroes.GetAll()) do
+				if hero~=nil and hero~=0 then
+					flame_guard = NPC.GetAbility(hero, "ember_spirit_flame_guard")
+					if flame_guard then
+						totaldomage = totaldomage - Ability.GetLevelSpecialValueFor(flame_guard,"absorb_amount")
+						local moredmgskill = NPC.GetAbility(target, "special_bonus_unique_ember_spirit_1")
+						if moredmgskill and Ability.GetLevel(moredmgskill) ~= 0 then
+							totaldomage = totaldomage - Ability.GetLevelSpecialValueFor(moredmgskill,"value")
+						end
+						break
+					end
+				end
+			end
+		end
+	end
+	if NPC.HasModifier(mynpc,"modifier_bloodseeker_bloodrage") then
+		for _,hero in pairs(Heroes.GetAll()) do
+			if hero~=nil and hero~=0 then
+				local bloodrage = NPC.GetAbility(hero, "bloodseeker_bloodrage")
+				if bloodrage then
+					totaldomage = totaldomage * (1 + Ability.GetLevelSpecialValueFor(bloodrage,"damage_increase_pct")/100)
+					break
+				end
+			end
+		end
+	end
+	if NPC.HasModifier(target,"modifier_bloodseeker_bloodrage") then
+		for _,hero in pairs(Heroes.GetAll()) do
+			if hero~=nil and hero~=0 then
+				local bloodrage = NPC.GetAbility(hero, "bloodseeker_bloodrage")
+				if bloodrage then
+					totaldomage = totaldomage * (1 + Ability.GetLevelSpecialValueFor(bloodrage,"damage_increase_pct")/100)
+					break
+				end
+			end
+		end
+	end
+	if NPC.HasModifier(target,"modifier_chen_penitence") then
+		for _,hero in pairs(Heroes.GetAll()) do
+			if hero~=nil and hero~=0 then
+				penitence = NPC.GetAbility(hero, "chen_penitence")
+				if penitence then
+					totaldomage = totaldomage * (1 + Ability.GetLevelSpecialValueFor(penitence,"bonus_damage_taken")/100)
+					break
+				end
+			end
+		end
+	end
+	if NPC.HasModifier(target,"modifier_shadow_demon_soul_catcher") then
+		for _,hero in pairs(Heroes.GetAll()) do
+			if hero~=nil and hero~=0 then
+				soul_catcher = NPC.GetAbility(hero, "shadow_demon_soul_catcher")
+				if soul_catcher then
+					totaldomage = totaldomage * (1 + Ability.GetLevelSpecialValueFor(soul_catcher,"bonus_damage_taken")/100)
+					break
+				end
+			end
+		end
+	end
+	
 	local mana_shield = NPC.GetAbility(target, "medusa_mana_shield")
 	if mana_shield and Ability.GetToggleState(mana_shield) then
-		-- local damage_per_mana = 1.3 + 0.3 * Ability.GetLevel(mana_shield) --идите нахуй Ability.GetLevelSpecialValueForFloat(mana_shield,"damage_per_mana") не дает верного ответа
-		-- local DamageForShiald = totaldomage * 0.6 - (damage_per_mana * NPC.GetMana(target))
-		-- if damage_per_mana * NPC.GetMana(target) > totaldomage * 0.6 then
-			-- totaldomage = totaldomage * 0.6
-		-- else
-			totaldomage = totaldomage * 0.4
-		-- end
+		totaldomage = totaldomage * 0.4
 	end
 	if NPC.HasModifier(target,"modifier_ursa_enrage") then
 		totaldomage = totaldomage * 0.2
 	end
 	local bristleback = NPC.GetAbility(target, "bristleback_bristleback")
-	if bristleback and Ability.GetLevel(bristleback) ~= 0 then -- углы полная хуйня, пошли нахуй, ненавижу вас
+	if bristleback and Ability.GetLevel(bristleback) ~= 0 then
 		local vectortarget = Entity.GetAbsOrigin(target)
 		local vectormy = Entity.GetAbsOrigin(Heroes.GetLocal())
 		local taorig = Entity.GetRotation(target):GetYaw()
@@ -70,7 +139,7 @@ function AutoDagon122112.GetDamageDagon(mynpc,target,dmg)
 	return totaldomage
 end
 
-function AutoDagon122112.Atan2(y,x) -- спс луа что нету math.atan2()
+function AutoDagon122112.Atan2(y,x)
 	if x > 0 then return math.atan(y/x) end
 	if x < 0 and y >= 0 then return math.atan(y/x) + math.pi end
 	if x < 0 and y < 0 then return math.atan(y/x) - math.pi end
@@ -84,12 +153,16 @@ function AutoDagon122112.IsHasGuard(npc)
 	if NPC.IsLinkensProtected(npc) then guarditis = "Linkens" end
 	if NPC.HasModifier(npc,"modifier_item_blade_mail_reflect") then guarditis = "BM" end
 	local spell_shield = NPC.GetAbility(npc, "antimage_spell_shield")
-	if spell_shield and Ability.IsReady(spell_shield) and (NPC.HasModifier(npc, "modifier_item_ultimate_scepter") or NPC.HasModifier(npc, "modifier_item_ultimate_scepter_consumed")) then
+	if not NPC.HasModifier(npc,"modifier_silver_edge_debuff") and spell_shield and Ability.IsReady(spell_shield) and (NPC.HasModifier(npc, "modifier_item_ultimate_scepter") or NPC.HasModifier(npc, "modifier_item_ultimate_scepter_consumed")) then
 		guarditis = "Lotus"
 	end
 	if NPC.HasModifier(npc,"modifier_item_lotus_orb_active") then guarditis = "Lotus" end
 	if 	NPC.HasState(npc,Enum.ModifierState.MODIFIER_STATE_MAGIC_IMMUNE) or 
 		NPC.HasState(npc,Enum.ModifierState.MODIFIER_STATE_OUT_OF_GAME) or
+		NPC.HasState(npc,Enum.ModifierState.MODIFIER_STATE_ATTACK_IMMUNE) or
+		NPC.HasState(npc,Enum.ModifierState.MODIFIER_STATE_INVULNERABLE) or
+		NPC.HasState(npc,Enum.ModifierState.MODIFIER_STATE_NO_HEALTH_BAR) or
+		NPC.HasModifier(npc,"modifier_dazzle_shallow_grave") or
 		NPC.HasModifier(npc,"modifier_medusa_stone_gaze_stone") or
 		NPC.HasModifier(npc,"modifier_winter_wyvern_winters_curse") or
 		NPC.HasModifier(npc,"modifier_templar_assassin_refraction_absorb") or
