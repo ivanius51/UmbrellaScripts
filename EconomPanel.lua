@@ -1,12 +1,12 @@
 local EconomPanel = {}
 local sizescrx,sizescry = Renderer.GetScreenSize()
-EconomPanel.optionEnable = Menu.AddOptionBool		({"TheCrazy88", "Economic Panel"}, "Активация", true)
-EconomPanel.TeamInfo = Menu.AddOptionBool			({"TheCrazy88", "Economic Panel"}, "Проценты команд", true)
-EconomPanel.OnOffKey=Menu.AddKeyOption				({"TheCrazy88", "Economic Panel"}, "Кнопка Открыть/Закрыть панель",Enum.ButtonCode.BUTTON_CODE_NONE)
-EconomPanel.posx = Menu.AddOptionSlider				({"TheCrazy88", "Economic Panel", "Настройки"}, "Положение X", 1,sizescrx-1,500)
-EconomPanel.posy = Menu.AddOptionSlider				({"TheCrazy88", "Economic Panel", "Настройки"}, "Положение Y", 1,sizescry-1,500)
-EconomPanel.sizeIcon = Menu.AddOptionSlider			({"TheCrazy88", "Economic Panel", "Настройки"}, "Размер", 20,300,50)
-EconomPanel.visibility = Menu.AddOptionSlider		({"TheCrazy88", "Economic Panel", "Настройки"}, "Прозрачность", 50,255,255)
+EconomPanel.optionEnable = Menu.AddOptionBool		({"TheCrazy88", "Economic Panel"}, "On|Off Script", true)
+EconomPanel.TeamInfo = Menu.AddOptionBool			({"TheCrazy88", "Economic Panel"}, "Team difference", true)
+EconomPanel.OnOffKey=Menu.AddKeyOption				({"TheCrazy88", "Economic Panel"}, "Key Open|Close panel",Enum.ButtonCode.BUTTON_CODE_NONE)
+EconomPanel.posx = Menu.AddOptionSlider				({"TheCrazy88", "Economic Panel", "Settings"}, "Pos panel X", 1,sizescrx-1,500)
+EconomPanel.posy = Menu.AddOptionSlider				({"TheCrazy88", "Economic Panel", "Settings"}, "Pos panel Y", 1,sizescry-1,500)
+EconomPanel.sizeIcon = Menu.AddOptionSlider			({"TheCrazy88", "Economic Panel", "Settings"}, "Size panel", 20,300,50)
+EconomPanel.visibility = Menu.AddOptionSlider		({"TheCrazy88", "Economic Panel", "Settings"}, "Transparency panel", 50,255,255)
 
 function EconomPanel.OnUpdate()
 	if not Menu.IsEnabled(EconomPanel.optionEnable) then canDraw = false return end

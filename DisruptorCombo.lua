@@ -1,9 +1,9 @@
 local DisruptorCombo = {}
 DisruptorCombo.optionEnable = Menu.AddOptionBool({"TheCrazy88", "Disruptor Combo"}, 		"Activation", true)
-DisruptorCombo.tp_back = Menu.AddOptionBool({"TheCrazy88", "Disruptor Combo"}, 				"Glimpse для возвращении после TP", true)
-DisruptorCombo.Find_enemy_radius = Menu.AddOptionSlider({"TheCrazy88", "Disruptor Combo"}, 	"Растоянние для поиска противника", 50, 500, 500)
-DisruptorCombo.auto_kinetic_field = Menu.AddOptionBool({"TheCrazy88", "Disruptor Combo"}, 	"Автоматический Kinetic Field", true)
-DisruptorCombo.Key2= Menu.AddKeyOption({"TheCrazy88", "Disruptor Combo"}, 					"Полный прокаст", Enum.ButtonCode.BUTTON_CODE_NONE)
+DisruptorCombo.tp_back = Menu.AddOptionBool({"TheCrazy88", "Disruptor Combo"}, 				"Glimpse for return after TP", true)
+DisruptorCombo.Find_enemy_radius = Menu.AddOptionSlider({"TheCrazy88", "Disruptor Combo"}, 	"Distance for find Enemy", 50, 500, 500)
+DisruptorCombo.auto_kinetic_field = Menu.AddOptionBool({"TheCrazy88", "Disruptor Combo"}, 	"Auto Kinetic Field", true)
+DisruptorCombo.Key2= Menu.AddKeyOption({"TheCrazy88", "Disruptor Combo"}, 					"Full Combo", Enum.ButtonCode.BUTTON_CODE_NONE)
 DisruptorCombo.Discord_Enable = Menu.AddOptionBool({"TheCrazy88", "Disruptor Combo", 		"Item manager"}, "Veil of Discord", true)
 DisruptorCombo.Urn_Enable = Menu.AddOptionBool({"TheCrazy88", "Disruptor Combo", 			"Item manager"}, "Urn of Shadows", true)
 DisruptorCombo.Spirit_Vessel_Enable = Menu.AddOptionBool({"TheCrazy88", "Disruptor Combo", 	"Item manager"}, "Spirit Vessel", true)
