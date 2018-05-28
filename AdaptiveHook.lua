@@ -1,0 +1,1 @@
+D:/122/DotaCheatEmbrela/scripts/AdaptiveHook.lua
