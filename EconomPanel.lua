@@ -14,13 +14,13 @@ function EconomPanel.OnUpdate()
 	EconomPanel.player = {}
 	meepohas = false
 	for i,hero in pairs(NPCs.GetAll()) do
-		if hero and hero ~= 0 and NPCs.Contains(hero) and Entity.IsHero(hero) and 
+		if hero ~= nil and hero ~= 0 and NPCs.Contains(hero) and Entity.IsHero(hero) and 
 		(not NPC.HasState(hero,Enum.ModifierState.MODIFIER_STATE_UNSELECTABLE) and not NPC.HasState(hero,Enum.ModifierState.MODIFIER_STATE_NOT_ON_MINIMAP)) then
 			if NPC.GetUnitName(hero) ~= "npc_dota_hero_meepo" or (NPC.GetUnitName(hero) == "npc_dota_hero_meepo" and not meepohas) then
 				havemoney = 0
 				for j = 0,14 do
 					local item = NPC.GetItemByIndex(hero,j)
-					if item and Entity.IsAbility(item) and itemprice[Ability.GetName(item)] then
+					if item ~= nil and item ~= 0 and Entity.IsAbility(item) and itemprice[Ability.GetName(item)] then
 						if Ability.GetName(item) == "item_tango" then
 							havemoney = havemoney + Item.GetCurrentCharges(item)*(itemprice[Ability.GetName(item)]/3)
 						elseif Ability.GetName(item) == "item_dust" then

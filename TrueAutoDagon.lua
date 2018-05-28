@@ -12,7 +12,7 @@ function AutoDagon122112.OnUpdate()
 	if not dagon then dagon = NPC.GetItem(myHero, "item_dagon_4", true)
 	if not dagon then dagon = NPC.GetItem(myHero, "item_dagon_5", true) 
 	end	end	end	end
-	if dagon and Ability.IsReady(dagon) and Ability.GetManaCost(dagon) <= NPC.GetMana(myHero) then
+	if dagon ~= nil and dagon ~= 0 and Ability.IsReady(dagon) and Ability.GetManaCost(dagon) <= NPC.GetMana(myHero) then
 		local damageDagon = Ability.GetLevelSpecialValueForFloat(dagon, "damage")
 		for _,hero in pairs(Heroes.GetAll()) do
 			if hero ~= nil and hero ~= 0 and NPCs.Contains(hero) and NPC.IsEntityInRange(myHero,hero,Ability.GetCastRange(dagon)) and not Entity.IsSameTeam(hero,myHero) then
@@ -35,7 +35,8 @@ function AutoDagon122112.GetDamageDagon(mynpc,target,dmg)
 	else 
 		BuffDmg = Hero.GetIntellectTotal(mynpc) * 0.07
 	end
-	if NPC.GetItem(mynpc, "item_kaya", true) then 
+	local kaya = NPC.GetItem(mynpc, "item_kaya", true)
+	if kaya~=nil and kaya~=0 then 
 		BuffDmg = BuffDmg + 10 
 	end
 	local bonus_amp = 
@@ -59,33 +60,49 @@ function AutoDagon122112.GetDamageDagon(mynpc,target,dmg)
 			end
 		end
 	end
+	local totaldomage = (dmg * NPC.GetMagicalArmorDamageMultiplier(target)) * (BuffDmg/100+1)
+	
 	local raindrop = NPC.GetItem(target, "item_infused_raindrop",true)
-	if BuffDmg >= 120 and raindrop and Ability.IsReady(raindrop) then
+	if totaldomage >= 120 and raindrop and Ability.IsReady(raindrop) then
 		totaldomage = totaldomage - 120
 	end
-	local totaldomage = (dmg * NPC.GetMagicalArmorDamageMultiplier(target)) * (BuffDmg/100+1)
 	if NPC.HasModifier(target,"modifier_item_hood_of_defiance_barrier") then
 		totaldomage = totaldomage - 325
 	end
 	if NPC.HasModifier(target,"modifier_item_pipe_barrier") then
 		totaldomage = totaldomage - 400
 	end
+	if NPC.HasModifier(target,"modifier_abaddon_aphotic_shield") then
+		for _,hero in pairs(Heroes.GetAll()) do
+			if hero~=nil and hero~=0 and Entity.IsSameTeam(target,hero) then
+				aphotic_shield = NPC.GetAbility(hero, "abaddon_aphotic_shield")
+				if aphotic_shield ~= nil and aphotic_shield ~= 0 then
+					totaldomage = totaldomage - Ability.GetLevelSpecialValueFor(aphotic_shield,"damage_absorb")
+					local moredmgskill = NPC.GetAbility(hero, "special_bonus_unique_abaddon")
+					if moredmgskill ~= nil and moredmgskill ~= 0 and Ability.GetLevel(moredmgskill) ~= 0 then
+						totaldomage = totaldomage - Ability.GetLevelSpecialValueFor(moredmgskill,"value")
+					end
+					break
+				end
+			end
+		end
+	end
 	if NPC.HasModifier(target,"modifier_ember_spirit_flame_guard") then
 		local flame_guard = NPC.GetAbility(target, "ember_spirit_flame_guard")
-		if flame_guard then
+		if flame_guard~=nil and flame_guard~=0 then
 			totaldomage = totaldomage - Ability.GetLevelSpecialValueFor(flame_guard,"absorb_amount")
 			local moredmgskill = NPC.GetAbility(target, "special_bonus_unique_ember_spirit_1")
-			if moredmgskill and Ability.GetLevel(moredmgskill) ~= 0 then
+			if moredmgskill~=nil and moredmgskill~=0 and Ability.GetLevel(moredmgskill) ~= 0 then
 				totaldomage = totaldomage - Ability.GetLevelSpecialValueFor(moredmgskill,"value")
 			end
 		else
 			for _,hero in pairs(Heroes.GetAll()) do
-				if hero~=nil and hero~=0 then
+				if hero~=nil and hero~=0 and Entity.IsSameTeam(target,hero) then
 					flame_guard = NPC.GetAbility(hero, "ember_spirit_flame_guard")
-					if flame_guard then
+					if flame_guard~=nil and flame_guard~=0 then
 						totaldomage = totaldomage - Ability.GetLevelSpecialValueFor(flame_guard,"absorb_amount")
-						local moredmgskill = NPC.GetAbility(target, "special_bonus_unique_ember_spirit_1")
-						if moredmgskill and Ability.GetLevel(moredmgskill) ~= 0 then
+						local moredmgskill = NPC.GetAbility(hero, "special_bonus_unique_ember_spirit_1")
+						if moredmgskill~=nil and moredmgskill~=0 and Ability.GetLevel(moredmgskill) ~= 0 then
 							totaldomage = totaldomage - Ability.GetLevelSpecialValueFor(moredmgskill,"value")
 						end
 						break
@@ -180,7 +197,7 @@ function AutoDagon122112.IsHasGuard(npc)
 	if NPC.IsLinkensProtected(npc) then guarditis = "Linkens" end
 	if NPC.HasModifier(npc,"modifier_item_blade_mail_reflect") then guarditis = "BM" end
 	local spell_shield = NPC.GetAbility(npc, "antimage_spell_shield")
-	if not NPC.HasModifier(npc,"modifier_silver_edge_debuff") and spell_shield and Ability.IsReady(spell_shield) and (NPC.HasModifier(npc, "modifier_item_ultimate_scepter") or NPC.HasModifier(npc, "modifier_item_ultimate_scepter_consumed")) then
+	if not NPC.HasModifier(npc,"modifier_silver_edge_debuff") and spell_shield ~= nil and spell_shield ~= 0 and Ability.IsReady(spell_shield) and (NPC.HasModifier(npc, "modifier_item_ultimate_scepter") or NPC.HasModifier(npc, "modifier_item_ultimate_scepter_consumed")) then
 		guarditis = "Lotus"
 	end
 	if NPC.HasModifier(npc,"modifier_item_lotus_orb_active") then guarditis = "Lotus" end
@@ -201,7 +218,7 @@ function AutoDagon122112.IsHasGuard(npc)
 	end
 	if NPC.HasModifier(npc,"modifier_legion_commander_duel") then
 		local duel = NPC.GetAbility(npc, "legion_commander_duel")
-		if duel then
+		if duel ~= nil and duel ~= 0 then
 			if NPC.HasModifier(npc, "modifier_item_ultimate_scepter") or NPC.HasModifier(npc, "modifier_item_ultimate_scepter_consumed") then
 				guarditis = "Immune"
 			end
@@ -209,7 +226,7 @@ function AutoDagon122112.IsHasGuard(npc)
 			for _,hero in pairs(Heroes.GetAll()) do
 				if hero ~= nil and hero ~= 0 and NPCs.Contains(hero) and not Entity.IsSameTeam(hero,npc) and NPC.HasModifier(hero,"modifier_legion_commander_duel") then
 					local dueltarget = NPC.GetAbility(hero, "legion_commander_duel")
-					if dueltarget then
+					if dueltarget ~= nil and dueltarget ~= 0 then
 						if NPC.HasModifier(hero, "modifier_item_ultimate_scepter") or NPC.HasModifier(hero, "modifier_item_ultimate_scepter_consumed") then
 							guarditis = "Immune"
 						end
@@ -219,7 +236,7 @@ function AutoDagon122112.IsHasGuard(npc)
 		end
 	end
 	local aeon_disk = NPC.GetItem(npc, "item_aeon_disk")
-	if aeon_disk and Ability.IsReady(aeon_disk) then guarditis = "Immune" end
+	if aeon_disk ~= nil and aeon_disk ~= 0 and Ability.IsReady(aeon_disk) then guarditis = "Immune" end
 	return guarditis
 end
 
