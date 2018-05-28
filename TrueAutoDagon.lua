@@ -31,12 +31,33 @@ function AutoDagon122112.GetDamageDagon(mynpc,target,dmg)
 	if not mynpc or not target then return end
 	local BuffDmg = 0
 	if Hero.GetPrimaryAttribute(mynpc) == 2 then 
-		BuffDmg = Hero.GetIntellectTotal(mynpc) * 0.0855
+		BuffDmg = Hero.GetIntellectTotal(mynpc) * (0.07 * 1.25)
 	else 
-		BuffDmg = Hero.GetIntellectTotal(mynpc) * 0.069 
+		BuffDmg = Hero.GetIntellectTotal(mynpc) * 0.07
 	end
 	if NPC.GetItem(mynpc, "item_kaya", true) then 
 		BuffDmg = BuffDmg + 10 
+	end
+	local bonus_amp = 
+	{
+		 "special_bonus_spell_amplify_3"
+		,"special_bonus_spell_amplify_4"
+		,"special_bonus_spell_amplify_5"
+		,"special_bonus_spell_amplify_6"
+		,"special_bonus_spell_amplify_8"
+		,"special_bonus_spell_amplify_10"
+		,"special_bonus_spell_amplify_12"
+		,"special_bonus_spell_amplify_15"
+		,"special_bonus_spell_amplify_20"
+		,"special_bonus_spell_amplify_25"
+	}
+	for _,nameskill in pairs(bonus_amp) do
+		if nameskill then
+			local bonus_spell_amplify = NPC.GetAbility(mynpc, nameskill)
+			if bonus_spell_amplify and Ability.GetLevel(bonus_spell_amplify) ~= 0 then
+				BuffDmg = BuffDmg + Ability.GetLevelSpecialValueFor(bonus_spell_amplify, "value")
+			end
+		end
 	end
 	local totaldomage = (dmg * NPC.GetMagicalArmorDamageMultiplier(target)) * (BuffDmg/100+1)
 	if NPC.HasModifier(target,"modifier_item_hood_of_defiance_barrier") then
@@ -113,10 +134,12 @@ function AutoDagon122112.GetDamageDagon(mynpc,target,dmg)
 			end
 		end
 	end
-	
 	local mana_shield = NPC.GetAbility(target, "medusa_mana_shield")
 	if mana_shield and Ability.GetToggleState(mana_shield) then
 		totaldomage = totaldomage * 0.4
+	end
+	if NPC.HasModifier(target,"modifier_nyx_assassin_burrow") then
+		totaldomage = totaldomage * 0.6
 	end
 	if NPC.HasModifier(target,"modifier_ursa_enrage") then
 		totaldomage = totaldomage * 0.2
