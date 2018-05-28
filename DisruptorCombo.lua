@@ -1,7 +1,7 @@
 local DisruptorCombo = {}
 DisruptorCombo.optionEnable = Menu.AddOptionBool({"TheCrazy88", "Disruptor Combo"}, 		"Activation", true)
 DisruptorCombo.tp_back = Menu.AddOptionBool({"TheCrazy88", "Disruptor Combo"}, 				"Glimpse for return after TP", true)
-DisruptorCombo.Find_enemy_radius = Menu.AddOptionSlider({"TheCrazy88", "Disruptor Combo"}, 	"Distance for find Enemy", 50, 500, 500)
+DisruptorCombo.Find_enemy_radius = Menu.AddOptionSlider({"TheCrazy88", "Disruptor Combo"}, 	"Distance for find Enemy", 50, 1000, 500)
 DisruptorCombo.auto_kinetic_field = Menu.AddOptionBool({"TheCrazy88", "Disruptor Combo"}, 	"Auto Kinetic Field", true)
 DisruptorCombo.Key2= Menu.AddKeyOption({"TheCrazy88", "Disruptor Combo"}, 					"Full Combo", Enum.ButtonCode.BUTTON_CODE_NONE)
 DisruptorCombo.Discord_Enable = Menu.AddOptionBool({"TheCrazy88", "Disruptor Combo", 		"Item manager"}, "Veil of Discord", true)
@@ -52,7 +52,7 @@ function DisruptorCombo.OnUpdate()
 	local spirit_vessel = NPC.GetItem(myHero, "item_spirit_vessel")
 	local meteor_hammer = NPC.GetItem(myHero, "item_meteor_hammer")
 	if not glimpse then return end
-	if DisruptorCombo.my_target and Entity.IsAlive(DisruptorCombo.my_target) and not Entity.IsDormant(DisruptorCombo.my_target) and not NPC.IsChannellingAbility(myHero) then
+	if DisruptorCombo.my_target and Entity.IsAlive(DisruptorCombo.my_target) and not Entity.IsDormant(DisruptorCombo.my_target) and not NPC.IsChannellingAbility(myHero) and DisruptorCombo.IsHasGuard(DisruptorCombo.my_target) == "nil" then
 		if thunder_strike and Ability.IsReady(thunder_strike) and NPC.IsEntityInRange(myHero,DisruptorCombo.my_target,Ability.GetCastRange(thunder_strike)) then
 			Ability.CastTarget(thunder_strike,DisruptorCombo.my_target)
 		elseif Menu.IsEnabled(DisruptorCombo.Discord_Enable) and veil_of_discord and Ability.IsReady(veil_of_discord) and NPC.IsEntityInRange(myHero,DisruptorCombo.my_target,Ability.GetCastRange(veil_of_discord)) then	
@@ -99,7 +99,9 @@ function DisruptorCombo.auto_kinetic_field_combo()
 	for i,j in pairs(DisruptorCombo.glimpse_table) do
 		if DisruptorCombo.glimpse_table[i] ~= nil and DisruptorCombo.glimpse_table[i] ~= 0 then
 			if kinetic_field and Ability.IsReady(kinetic_field) and not Ability.IsReady(glimpse) then
-				Ability.CastPosition(kinetic_field,j[2])
+				if DisruptorCombo.IsHasGuard(j[4]) == "nil" then
+					Ability.CastPosition(kinetic_field,j[2])
+				end
 			end
 		end
 	end
@@ -112,7 +114,9 @@ function DisruptorCombo.go_back_to_base()
 			if npcforback[2] >= GameRules.GetGameTime() then
 				if npcforback[1] ~= nil and npcforback[1] ~= 0 and NPCs.Contains(npcforback[1]) and Entity.IsAlive(npcforback[1]) and not Entity.IsDormant(npcforback[1]) then
 					DisruptorCombo.timer_oreder = GameRules.GetGameTime() + 5
-					Ability.CastTarget(glimpse,npcforback[1])
+					if DisruptorCombo.IsHasGuard(npcforback[1]) == "nil" then
+						Ability.CastTarget(glimpse,npcforback[1])
+					end
 				end
 			else
 				DisruptorCombo.need_tp_back[i] = nil
@@ -121,13 +125,33 @@ function DisruptorCombo.go_back_to_base()
 	end
 end
 
+
+function DisruptorCombo.IsHasGuard(npc)
+	local guarditis = "nil"
+	if NPC.IsLinkensProtected(npc) then
+		guarditis = "Linkens"
+	end
+	local spell_shield = NPC.GetAbility(npc, "antimage_spell_shield")
+	if not NPC.HasModifier(npc,"modifier_silver_edge_debuff") and spell_shield and Ability.IsReady(spell_shield) and (NPC.HasModifier(npc, "modifier_item_ultimate_scepter") or NPC.HasModifier(npc, "modifier_item_ultimate_scepter_consumed")) then
+		guarditis = "Lotus"
+	end
+	if NPC.HasModifier(npc,"modifier_item_lotus_orb_active") then
+		guarditis = "Lotus"
+	end
+	if	NPC.HasState(npc,Enum.ModifierState.MODIFIER_STATE_MAGIC_IMMUNE) or 
+		NPC.HasState(npc,Enum.ModifierState.MODIFIER_STATE_OUT_OF_GAME) then
+		guarditis = "Immune"
+	end
+	return guarditis
+end
+
 function DisruptorCombo.FindBestTarget()
 	table_target = Heroes.InRadius(Input.GetWorldCursorPos(),Menu.GetValue(DisruptorCombo.Find_enemy_radius),Entity.GetTeamNum(Heroes.GetLocal()),Enum.TeamType.TEAM_ENEMY)
 	local best_dist = 9999
 	local best_npc = nil
 	if table_target then
 		for _,npc in pairs(table_target) do
-			if npc ~= nil and npc ~= 0 and Entity.IsAlive(npc) and not Entity.IsDormant(npc) and not NPC.IsIllusion(npc) and not NPC.HasState(npc,Enum.ModifierState.MODIFIER_STATE_MAGIC_IMMUNE) then
+			if npc ~= nil and npc ~= 0 and Entity.IsAlive(npc) and not Entity.IsDormant(npc) and not NPC.IsIllusion(npc) and DisruptorCombo.IsHasGuard(npc) == "nil" then
 				if best_dist > Input.GetWorldCursorPos():Distance(Entity.GetAbsOrigin(npc)):Length2D() then
 					best_dist = Input.GetWorldCursorPos():Distance(Entity.GetAbsOrigin(npc)):Length2D()
 					best_npc = npc
@@ -144,6 +168,17 @@ function DisruptorCombo.OnParticleCreate(particle)
 		table.insert(DisruptorCombo.glimpse_table,{particle.index})
 	elseif particle.name == "teleport_start" then
 		table.insert(DisruptorCombo.tp_table,{particle.index, particle.entityForModifiers})
+	end
+end
+
+function DisruptorCombo.OnParticleUpdateEntity(particle)
+	if not Menu.IsEnabled(DisruptorCombo.optionEnable) or GameRules.GetGameTime() == nil or GameRules.GetGameTime() == 0 or not Heroes.GetLocal() then return end
+	if particle.entity ~= 0 and particle.entity ~= nil and DisruptorCombo.glimpse_table then
+		for i,j in pairs(DisruptorCombo.glimpse_table) do
+			if DisruptorCombo.glimpse_table[i] ~= nil and DisruptorCombo.glimpse_table[i] ~= 0 and j[1] == particle.index then
+				DisruptorCombo.glimpse_table[i][4] = particle.entity
+			end
+		end
 	end
 end
 
