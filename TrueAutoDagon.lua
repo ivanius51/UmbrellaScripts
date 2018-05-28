@@ -59,6 +59,10 @@ function AutoDagon122112.GetDamageDagon(mynpc,target,dmg)
 			end
 		end
 	end
+	local raindrop = NPC.GetItem(target, "item_infused_raindrop",true)
+	if BuffDmg >= 120 and raindrop and Ability.IsReady(raindrop) then
+		totaldomage = totaldomage - 120
+	end
 	local totaldomage = (dmg * NPC.GetMagicalArmorDamageMultiplier(target)) * (BuffDmg/100+1)
 	if NPC.HasModifier(target,"modifier_item_hood_of_defiance_barrier") then
 		totaldomage = totaldomage - 325
