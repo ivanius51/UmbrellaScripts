@@ -2,6 +2,7 @@ local EconomPanel = {}
 local sizescrx,sizescry = Renderer.GetScreenSize()
 EconomPanel.optionEnable = Menu.AddOptionBool		({"TheCrazy88", "Economic Panel"}, "Активация", true)
 EconomPanel.TeamInfo = Menu.AddOptionBool			({"TheCrazy88", "Economic Panel"}, "Проценты команд", true)
+EconomPanel.OnOffKey=Menu.AddKeyOption				({"TheCrazy88", "Economic Panel"}, "Кнопка Открыть/Закрыть панель",Enum.ButtonCode.BUTTON_CODE_NONE)
 EconomPanel.posx = Menu.AddOptionSlider				({"TheCrazy88", "Economic Panel", "Настройки"}, "Положение X", 1,sizescrx-1,500)
 EconomPanel.posy = Menu.AddOptionSlider				({"TheCrazy88", "Economic Panel", "Настройки"}, "Положение Y", 1,sizescry-1,500)
 EconomPanel.sizeIcon = Menu.AddOptionSlider			({"TheCrazy88", "Economic Panel", "Настройки"}, "Размер", 20,300,50)
@@ -9,6 +10,10 @@ EconomPanel.visibility = Menu.AddOptionSlider		({"TheCrazy88", "Economic Panel",
 
 function EconomPanel.OnUpdate()
 	if not Menu.IsEnabled(EconomPanel.optionEnable) then canDraw = false return end
+	if Menu.IsKeyDownOnce(EconomPanel.OnOffKey) then
+		EconomPanel.OnOfffPanel = not EconomPanel.OnOfffPanel 
+	end
+	if not EconomPanel.OnOfffPanel then return end
 	local myHero = Heroes.GetLocal()
 	if not myHero then return end
 	EconomPanel.player = {}
@@ -53,7 +58,7 @@ function EconomPanel.OnUpdate()
 end
 
 function EconomPanel.OnDraw()
-	if canDraw and EconomPanel.player then
+	if canDraw and EconomPanel.player and EconomPanel.OnOfffPanel then
 		xpos = Menu.GetValue(EconomPanel.posx)
 		ypos =  Menu.GetValue(EconomPanel.posy)
 		sizeamountx =  Menu.GetValue(EconomPanel.sizeIcon)
@@ -117,6 +122,7 @@ function EconomPanel.init()
 	canDraw = false
 	meepohas = false
 	EconomPanel.player = {}
+	EconomPanel.OnOfffPanel = true
 	heroicon = {}
 	itemprice = {}
 do
