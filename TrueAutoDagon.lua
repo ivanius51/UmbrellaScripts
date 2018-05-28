@@ -35,7 +35,7 @@ function AutoDagon122112.GetDamageDagon(mynpc,target,dmg)
 	else 
 		BuffDmg = Hero.GetIntellectTotal(mynpc) * 0.07
 	end
-	local kaya = NPC.GetItem(mynpc, "item_kaya", true)
+	local kaya = NPC.GetItem(mynpc, "item_kaya")
 	if kaya~=nil and kaya~=0 then 
 		BuffDmg = BuffDmg + 10 
 	end
@@ -62,7 +62,7 @@ function AutoDagon122112.GetDamageDagon(mynpc,target,dmg)
 	end
 	local totaldomage = (dmg * NPC.GetMagicalArmorDamageMultiplier(target)) * (BuffDmg/100+1)
 	
-	local raindrop = NPC.GetItem(target, "item_infused_raindrop",true)
+	local raindrop = NPC.GetItem(target, "item_infused_raindrop")
 	if totaldomage >= 120 and raindrop and Ability.IsReady(raindrop) then
 		totaldomage = totaldomage - 120
 	end

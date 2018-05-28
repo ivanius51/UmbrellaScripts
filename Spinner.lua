@@ -41,7 +41,7 @@ function Spinner.PositionAngle(nps,rotation,range)
 	direction:SetZ(0)
 	direction:Normalize()
 	direction:Scale(range)
-	local origin = NPC.GetAbsOrigin(nps)
+	local origin = Entity.GetAbsOrigin(nps)
 	NeedPos = origin + direction
 	return NeedPos
 end
