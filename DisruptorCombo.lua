@@ -99,7 +99,7 @@ function DisruptorCombo.auto_kinetic_field_combo()
 	for i,j in pairs(DisruptorCombo.glimpse_table) do
 		if DisruptorCombo.glimpse_table[i] ~= nil and DisruptorCombo.glimpse_table[i] ~= 0 then
 			if kinetic_field and Ability.IsReady(kinetic_field) and not Ability.IsReady(glimpse) then
-				if DisruptorCombo.IsHasGuard(j[4]) == "nil" then
+				if DisruptorCombo.IsHasGuard(j[4]) == "nil" and NPC.IsPositionInRange(Heroes.GetLocal(),j[2],Ability.GetCastRange(kinetic_field)+100) and not Entity.IsSameTeam(Heroes.GetLocal(),j[4]) then
 					Ability.CastPosition(kinetic_field,j[2])
 				end
 			end
@@ -113,8 +113,8 @@ function DisruptorCombo.go_back_to_base()
 		for i,npcforback in pairs(DisruptorCombo.need_tp_back) do
 			if npcforback[2] >= GameRules.GetGameTime() then
 				if npcforback[1] ~= nil and npcforback[1] ~= 0 and NPCs.Contains(npcforback[1]) and Entity.IsAlive(npcforback[1]) and not Entity.IsDormant(npcforback[1]) then
-					DisruptorCombo.timer_oreder = GameRules.GetGameTime() + 5
-					if DisruptorCombo.IsHasGuard(npcforback[1]) == "nil" then
+					if DisruptorCombo.IsHasGuard(npcforback[1]) == "nil" and NPC.IsEntityInRange(Heroes.GetLocal(),npcforback[1],Ability.GetCastRange(glimpse)) then
+						DisruptorCombo.timer_oreder = GameRules.GetGameTime() + 5
 						Ability.CastTarget(glimpse,npcforback[1])
 					end
 				end
@@ -167,7 +167,9 @@ function DisruptorCombo.OnParticleCreate(particle)
 	if particle.name == "disruptor_glimpse_targetend" and DisruptorCombo.timer_oreder < GameRules.GetGameTime() then
 		table.insert(DisruptorCombo.glimpse_table,{particle.index})
 	elseif particle.name == "teleport_start" then
-		table.insert(DisruptorCombo.tp_table,{particle.index, particle.entityForModifiers})
+		if not Entity.IsSameTeam(Heroes.GetLocal(),particle.entityForModifiers) then
+			table.insert(DisruptorCombo.tp_table,{particle.index, particle.entityForModifiers})
+		end
 	end
 end
 
@@ -176,7 +178,11 @@ function DisruptorCombo.OnParticleUpdateEntity(particle)
 	if particle.entity ~= 0 and particle.entity ~= nil and DisruptorCombo.glimpse_table then
 		for i,j in pairs(DisruptorCombo.glimpse_table) do
 			if DisruptorCombo.glimpse_table[i] ~= nil and DisruptorCombo.glimpse_table[i] ~= 0 and j[1] == particle.index then
-				DisruptorCombo.glimpse_table[i][4] = particle.entity
+				if not Entity.IsSameTeam(Heroes.GetLocal(),particle.entity) then
+					DisruptorCombo.glimpse_table[i][4] = particle.entity
+				else
+					DisruptorCombo.glimpse_table[i] = nil
+				end
 			end
 		end
 	end
