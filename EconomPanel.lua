@@ -19,7 +19,7 @@ function EconomPanel.OnUpdate()
 	EconomPanel.player = {}
 	meepohas = false
 	for _,hero in pairs(Heroes.GetAll()) do
-		if hero ~= nil and hero ~= 0 and NPCs.Contains(hero) and Entity.IsHero(hero) and not NPC.IsIllusion(hero) and
+		if hero and Entity.IsHero(hero) and not NPC.IsIllusion(hero) and
 		(not NPC.HasState(hero,Enum.ModifierState.MODIFIER_STATE_UNSELECTABLE) and not NPC.HasState(hero,Enum.ModifierState.MODIFIER_STATE_NOT_ON_MINIMAP)) then
 			if NPC.GetUnitName(hero) ~= "npc_dota_hero_meepo" or (NPC.GetUnitName(hero) == "npc_dota_hero_meepo" and not meepohas) then
 				havemoney = 0
@@ -72,14 +72,16 @@ function EconomPanel.OnDraw()
 		local enteamcoint = 0
 		for _,hero in pairs(EconomPanel.player) do
 			Renderer.SetDrawColor(255,255,255,visibility)
-			if hero[1] ~= nil and hero[1] ~= 0 and NPCs.Contains(hero[1]) then
+			if hero[1] and Heroes.Contains(hero[1]) then
 				local imageHandle
 				if not heroicon[hero[1]] then
 					heroicon[hero[1]] = Renderer.LoadImage("resource/flash3/images/heroes/selection/".. NPC.GetUnitName(hero[1]) ..".png")
 				end
 				imageHandle = heroicon[hero[1]]
 				local prochent = hero[2]/(EconomPanel.player[1][2]/100)/100*2
-				Renderer.DrawImage(imageHandle, math.ceil(xpos), math.ceil(ypos), math.ceil(sizeBarx), math.ceil(sizeBary))
+				if imageHandle then
+					Renderer.DrawImage(imageHandle, math.ceil(xpos), math.ceil(ypos), math.ceil(sizeBarx), math.ceil(sizeBary))
+				end
 				xpos = xpos + sizeBarx
 				if Heroes.GetLocal() and Entity.IsSameTeam(Heroes.GetLocal(),hero[1]) then
 					Renderer.SetDrawColor(0,100,0,visibility)
