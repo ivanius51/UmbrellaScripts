@@ -95,9 +95,9 @@ function ShowMeMore.OnDraw()
 		if npc and Entity.IsEntity(npc) then
 			if Menu.IsEnabled(ShowMeMore.CourierActivation) and ShowMeMore.CanDrawCourier and (Menu.IsEnabled(ShowMeMore.CourierItembar) or Menu.IsEnabled(ShowMeMore.CourierItemPanel)) then
 				if NPC.IsCourier(npc) and Entity.IsAlive(npc) then
-					local x,y,v = Renderer.WorldToScreen(Entity.GetAbsOrigin(npc))
-					local x = x - Menu.GetValue(ShowMeMore.CourierOffsetXitembar)
-					local y = y - Menu.GetValue(ShowMeMore.CourierOffsetYitembar)
+					local x,y = Renderer.WorldToScreen(Entity.GetAbsOrigin(npc))
+					x = x - Menu.GetValue(ShowMeMore.CourierOffsetXitembar)
+					y = y - Menu.GetValue(ShowMeMore.CourierOffsetYitembar)
 					for i = 0, 15 do
 						local item = NPC.GetItemByIndex(npc, i) 
 						if item and Entity.IsEntity(item) and Entity.IsAbility(item) and ((not Menu.IsEnabled(ShowMeMore.CourierOnlyEnemy) and Entity.IsSameTeam(Heroes.GetLocal(), npc)) or not Entity.IsSameTeam(Heroes.GetLocal(), npc)) then
@@ -121,7 +121,7 @@ function ShowMeMore.OnDraw()
 							local ItemImg = TableIMG[Ability.GetName(item)]
 							if Menu.IsEnabled(ShowMeMore.CourierItembar) and not Entity.IsDormant(npc) then
 								Renderer.SetDrawColor(255, 255, 255, Menu.GetValue(ShowMeMore.CourierItemBarVisibility))
-								if x and y and v then
+								if x and y and ShowMeMore.IsOnScreen(x, y) then
 									if ItemImg then
 										Renderer.DrawImage(ItemImg, x, y, Menu.GetValue(ShowMeMore.CourierItemBarSizeImg), Menu.GetValue(ShowMeMore.CourierItemBarSizeImg))
 									end
@@ -139,7 +139,7 @@ function ShowMeMore.OnDraw()
 									X1courier = X1courier + Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg) + 2
 									x, y = X1courier, Y1courier
 									if CourierRadiant then
-										Renderer.DrawImage(CourierRadiant, Menu.GetValue(ShowMeMore.CourierOffsetXItemPanel), Menu.GetValue(ShowMeMore.CourierOffsetYItemPanel) - (Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg) + 2) * 2, Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg), Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg))
+										Renderer.DrawImage(CourierRadiant, Menu.GetValue(ShowMeMore.CourierOffsetXItemPanel), Menu.GetValue(ShowMeMore.CourierOffsetYItemPanel) - (Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg) + 2) * 0.5, Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg), Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg))
 									end
 								else
 									X2courier = X2courier + Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg) + 2
@@ -187,13 +187,13 @@ function ShowMeMore.OnDraw()
 			end
 			if Menu.IsEnabled(ShowMeMore.ShowMeHidenEntity) and not Entity.IsSameTeam(npc, Heroes.GetLocal()) then
 				if NPC.GetUnitName(npc) == "npc_dota_templar_assassin_psionic_trap" or NPC.GetUnitName(npc) == "npc_dota_treant_eyes" then
-					local x, y, v = Renderer.WorldToScreen(Entity.GetAbsOrigin(npc))
+					local x, y = Renderer.WorldToScreen(Entity.GetAbsOrigin(npc))
 					local sizeimg = Menu.GetValue(ShowMeMore.ShowMeHidenEntitySizeImg)
-					if x and y and v then
+					if x and y and ShowMeMore.IsOnScreen(x, y) then
 						if NPC.GetUnitName(npc) == "npc_dota_templar_assassin_psionic_trap" and Menu.IsEnabled(ShowMeMore.ShowMeHidenEntityPsionicTrap) then
-							Renderer.DrawImage(PsionicTrapIMG, x-sizeimg/2, y-sizeimg/2, sizeimg, sizeimg)
+							Renderer.DrawImage(PsionicTrapIMG, x - sizeimg * 0.5, y - sizeimg * 0.5, sizeimg, sizeimg)
 						elseif NPC.GetUnitName(npc) == "npc_dota_treant_eyes" and Menu.IsEnabled(ShowMeMore.ShowMeHidenEntityEyesInTheForest) then
-							Renderer.DrawImage(TreantTreeIMG, x-sizeimg/2, y-sizeimg/2, sizeimg, sizeimg)
+							Renderer.DrawImage(TreantTreeIMG, x - sizeimg * 0.5, y - sizeimg * 0.5, sizeimg, sizeimg)
 						end
 					end
 				end
@@ -265,7 +265,7 @@ end
 
 function ShowMeMore.OnUpdate()
 	if not Menu.IsEnabled(ShowMeMore.optionEnable) and not Heroes.Contains(Heroes.GetLocal()) then ShowMeMore.InGame = false return end
-	if TableParticle and #TableParticle > 0 then
+	if TableParticle then
 		for npc,particle in pairs(TableParticle) do
 			if Entity.IsEntity(npc) and not Entity.IsAlive(npc) then
 				if particle then
@@ -276,7 +276,7 @@ function ShowMeMore.OnUpdate()
 			end
 		end
 	end
-	if ShowMeEnemyTableParticle and #ShowMeEnemyTableParticle > 0 then
+	if ShowMeEnemyTableParticle then
 		for npc,particle in pairs(ShowMeEnemyTableParticle) do
 			if Entity.IsEntity(npc) and (not Entity.IsAlive(npc) or not NPC.IsVisibleToEnemies(npc)) then
 				Particle.Destroy(ShowMeEnemyTableParticle[npc])
@@ -299,8 +299,8 @@ function ShowMeMore.ModifierTimerFunc()
 		if hero and Entity.IsEntity(hero) and not NPC.IsIllusion(hero) and Entity.IsAlive(hero) and not Entity.IsDormant(hero) then
 			local hasmodifier = ShowMeMore.GetModifiersOnNps(hero)
 			local sizeimg = Menu.GetValue(ShowMeMore.ShowMeModifierTimerSizeIMG)
-			local x, y, v = Renderer.WorldToScreen(Entity.GetAbsOrigin(hero))
-			if x and y and v then
+			local x, y = Renderer.WorldToScreen(Entity.GetAbsOrigin(hero))
+			if x and y and ShowMeMore.IsOnScreen(x, y) then
 				x = x - (sizeimg * #hasmodifier) * 0.5
 				y = y + Menu.GetValue(ShowMeMore.ShowMeModifierTimerYoffset)
 				for _,modifier in pairs(hasmodifier) do
@@ -439,9 +439,9 @@ function ShowMeMore.TawerFunc()
 				end
 			end
 		end
-		if ShowMeMore.TawersTable and #ShowMeMore.TawersTable ~= 0 and ShowMeMore.TawerUpdateTiming < GameRules.GetGameTime() then
-			for _,j in pairs(ShowMeMore.TawersTable) do
-				if j then
+		if ShowMeMore.TawersTable and ShowMeMore.TawerUpdateTiming < GameRules.GetGameTime() then
+			for i,j in pairs(ShowMeMore.TawersTable) do
+				if j and Entity.IsEntity(i) then
 					if not j.particle then
 						j.particle = Particle.Create(TawerRing)
 						Particle.SetControlPoint(j.particle, 2, Entity.GetOrigin(i))
@@ -526,6 +526,16 @@ function ShowMeMore.GetModifiersOnNps(npc)
         end
     end
     return TableMod
+end
+
+function ShowMeMore.IsOnScreen(x, y)
+	if (x < 0) or (y < 0) then 
+		return false 
+	end
+	if (x > size_x) or (y > size_y) then 
+		return false 
+	end
+	return true
 end
 
 function ShowMeMore.init()
