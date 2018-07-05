@@ -1,7 +1,6 @@
 local ShowMeMore = {}
 local size_x, size_y = Renderer.GetScreenSize()
 ShowMeMore.optionEnable = Menu.AddOptionBool({"TheCrazy88","ShowMeMore"},"Activation Script", true)
-ShowMeMore.TrueSightActivation = Menu.AddOptionBool({"TheCrazy88","ShowMeMore"},"TrueSight Info", true)
 
 ShowMeMore.CourierActivation = Menu.AddOptionBool({"TheCrazy88","ShowMeMore","Courier Info"},"Activation", true)
 ShowMeMore.CourierOnlyEnemy = Menu.AddOptionBool({"TheCrazy88","ShowMeMore","Courier Info"},"Only Enemy Courier", false)
@@ -30,6 +29,7 @@ ShowMeMore.RuneNotificationTime = Menu.AddOptionSlider({"TheCrazy88","ShowMeMore
 ShowMeMore.RuneMetodNotification = Menu.AddOptionCombo({"TheCrazy88","ShowMeMore","Rune Notification"}, "Metod Notification [not work]", {"Only myself","For team"}, 1)
 
 ShowMeMore.MissingHeroActivation = Menu.AddOptionBool({"TheCrazy88","ShowMeMore","Missing Hero"},"Missing Hero Activation", true)
+ShowMeMore.MissingHeroBlackBackground = Menu.AddOptionBool({"TheCrazy88","ShowMeMore","Missing Hero"},"Black Background", true)
 ShowMeMore.MissingHeroOpenClose = Menu.AddKeyOption({"TheCrazy88","ShowMeMore","Missing Hero"},"Key Open or Close panel",Enum.ButtonCode.BUTTON_CODE_NONE)
 ShowMeMore.MissingHeroOffsetX = Menu.AddOptionSlider({"TheCrazy88","ShowMeMore","Missing Hero"},"Offset X Position", 0, size_x, 50)
 ShowMeMore.MissingHeroOffsetY = Menu.AddOptionSlider({"TheCrazy88","ShowMeMore","Missing Hero"},"Offset Y Position", 0, size_y, 50)
@@ -98,22 +98,6 @@ function ShowMeMore.OnDraw()
 	local X2courier,Y2courier = Menu.GetValue(ShowMeMore.CourierOffsetXItemPanel),Menu.GetValue(ShowMeMore.CourierOffsetYItemPanel)+(Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg)+2)*2.5
 	for _,npc in pairs(NPCs.GetAll()) do
 		if npc and Entity.IsEntity(npc) then
-			if Menu.IsEnabled(ShowMeMore.TrueSightActivation) then
-				if NPC.HasModifier(npc,"modifier_truesight") and Entity.IsAlive(npc) and Entity.IsSameTeam(Heroes.GetLocal(),npc) then
-					if not TableParticle[npc] then
-						if NPC.IsHero(npc) then
-							TableParticle[npc] = Particle.Create(TrueSide,Enum.ParticleAttachment.PATTACH_OVERHEAD_FOLLOW,npc)
-						else
-							TableParticle[npc] = Particle.Create(TrueSide,Enum.ParticleAttachment.PATTACH_ROOTBONE_FOLLOW,npc)
-						end
-					end
-				else
-					if TableParticle[npc] then
-						Particle.Destroy(TableParticle[npc])
-						TableParticle[npc] = nil
-					end
-				end
-			end
 			if Menu.IsEnabled(ShowMeMore.CourierActivation) and ShowMeMore.CanDrawCourier and (Menu.IsEnabled(ShowMeMore.CourierItembar) or Menu.IsEnabled(ShowMeMore.CourierItemPanel)) then
 				if NPC.IsCourier(npc) and Entity.IsAlive(npc) then
 					local x,y,v = Renderer.WorldToScreen(Entity.GetAbsOrigin(npc))
@@ -394,8 +378,10 @@ function ShowMeMore.MissHeroFunc()
 				Renderer.DrawImage(HeroIMG,math.ceil(PosX),math.ceil(PosY),math.ceil(SizeIMG*0.85),math.ceil(SizeIMG))
 			end
 			PosX = PosX + SizeIMG
-			Renderer.SetDrawColor(0,0,0,Menu.GetValue(ShowMeMore.MissingVisibility))
-			Renderer.DrawFilledRect(PosX,math.ceil(PosY),math.ceil(SizeIMG*4),math.ceil(SizeIMG))
+			if Menu.IsEnabled(ShowMeMore.MissingHeroBlackBackground) then
+				Renderer.SetDrawColor(0,0,0,Menu.GetValue(ShowMeMore.MissingVisibility))
+				Renderer.DrawFilledRect(PosX,math.ceil(PosY),math.ceil(SizeIMG*4),math.ceil(SizeIMG))
+			end
 			Renderer.SetDrawColor(255,255,255,Menu.GetValue(ShowMeMore.MissingVisibility))
 			if info.timer > 0 then
 				local timetoinvis = GameRules.GetGameTime() - info.timer
