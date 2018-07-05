@@ -113,9 +113,9 @@ function ShowMeMore.OnUpdate()
   ShowMeMore.FuncRuneNotif()
   X1courier, Y1courier = Menu.GetValue(ShowMeMore.CourierOffsetXItemPanel), Menu.GetValue(ShowMeMore.CourierOffsetYItemPanel)
   X2courier, Y2courier = Menu.GetValue(ShowMeMore.CourierOffsetXItemPanel), Menu.GetValue(ShowMeMore.CourierOffsetYItemPanel) + (Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg) + 2) * 2.5
-  local AllNPC = NPCs.GetAll();
+  local AllNPC = NPCs.GetAll()
   for i = 0, #AllNPC  do
-    local npc = AllNPC[i];
+    local npc = AllNPC[i]
     if npc and Entity.IsEntity(npc) then
       ShowMeMore.FuncCouerInf(npc)
       ShowMeMore.FuncVisByEnemy(npc)
@@ -179,8 +179,9 @@ function ShowMeMore.FuncCouerInf(npc)
             end
           end
           local OwnerImg = nil
-          for i = 0, Heroes.Count() do
-            local hero = Heroes.Get(i)
+          local count = Heroes.GetAll()
+          for i = 0, #count do
+            local hero = count[i]
             if hero and Entity.IsEntity(hero) and Hero.GetPlayerID(hero) == Item.GetPlayerOwnerID(item) then
               if not TableIMG[hero] then
                 TableIMG[hero] = Renderer.LoadImage("resource/flash3/images/heroes/selection/".. NPC.GetUnitName(hero) ..".png")
@@ -330,8 +331,9 @@ function ShowMeMore.FuncRoshan()
 end
 
 function ShowMeMore.FuncModifierTimer()
-  for i = 0, Heroes.Count() do
-    local hero = Heroes.Get(i)
+  local herocount = Heroes.GetAll()
+  for i = 0, #herocount do
+    local hero = herocount[i]
     if hero and Entity.IsEntity(hero) and not NPC.IsIllusion(hero) and Entity.IsAlive(hero) and not Entity.IsDormant(hero) then
       if (Menu.IsEnabled(ShowMeMore.ShowMeModifierTimerAlliesEnt) and Entity.IsSameTeam(Heroes.GetLocal(), hero)) or not Entity.IsSameTeam(Heroes.GetLocal(), hero) then
         local hasmodifier = ShowMeMore.GetModifiersOnNps(hero)
@@ -378,8 +380,9 @@ end
 
 function ShowMeMore.FuncMissHero()
   if Menu.IsEnabled(ShowMeMore.MissingHeroActivation) and ShowMeMore.CanDrawMissingHero then
-    for i = 0, Heroes.Count() do
-      local j = Heroes.Get(i)
+    local heroescount = Heroes.GetAll()
+    for i = 0, #heroescount do
+      local j = heroescount[i]
       if j and Entity.IsEntity(j) and not Entity.IsSameTeam(Heroes.GetLocal(),j) then
         if not ShowMeMore.MissingHeroTable[j] then
           ShowMeMore.MissingHeroTable[j] = {timer = 0, triger = false}
