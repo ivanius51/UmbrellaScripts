@@ -177,11 +177,11 @@ function ShowMeMore.OnDraw()
 			if Menu.IsEnabled(ShowMeMore.ShowMeEnemyActivation) and not Entity.IsHero(npc) and Entity.IsAlive(npc) and Entity.IsSameTeam(Heroes.GetLocal(), npc) then
 				if NPC.IsVisibleToEnemies(npc) and not ShowMeEnemyTableParticle[npc] then
 					if Menu.IsEnabled(ShowMeMore.ShowSummonsActivation) and NPC.IsCreep(npc) then
-						ShowMeEnemyTableParticle[npc] = Particle.Create(Shivas,Enum.ParticleAttachment.PATTACH_ABSORIGIN_FOLLOW,npc)
+						ShowMeEnemyTableParticle[npc] = Particle.Create(Shivas, Enum.ParticleAttachment.PATTACH_ABSORIGIN_FOLLOW,npc)
 					elseif Menu.IsEnabled(ShowMeMore.ShowLaneCreepsActivation) and NPC.IsLaneCreep(npc) then
-						ShowMeEnemyTableParticle[npc] = Particle.Create(Shivas,Enum.ParticleAttachment.PATTACH_ABSORIGIN_FOLLOW,npc)
+						ShowMeEnemyTableParticle[npc] = Particle.Create(Shivas, Enum.ParticleAttachment.PATTACH_ABSORIGIN_FOLLOW,npc)
 					elseif Menu.IsEnabled(ShowMeMore.ShowCourierActivation) and NPC.IsCourier(npc) then
-						ShowMeEnemyTableParticle[npc] = Particle.Create(Shivas,Enum.ParticleAttachment.PATTACH_ABSORIGIN_FOLLOW,npc)
+						ShowMeEnemyTableParticle[npc] = Particle.Create(Shivas, Enum.ParticleAttachment.PATTACH_ABSORIGIN_FOLLOW,npc)
 					end
 				end
 			end
@@ -220,28 +220,28 @@ function ShowMeMore.OnDraw()
 				end
 			end
 			local timer = math.floor(ShowMeMore.RoshanTimeDead - GameRules.GetGameTime())
-			if timer%60 < 10 then
-				RoshanInfo1 = math.floor(timer/60) .. ":0" .. timer%60
-				RoshanInfo2 = math.floor(timer/60-4) .. ":0" .. timer%60
+			if timer % 60 < 10 then
+				RoshanInfo1 = math.floor(timer / 60) .. ":0" .. timer % 60
+				RoshanInfo2 = math.floor(timer / 60 - 4) .. ":0" .. timer % 60
 			else
-				RoshanInfo1 = math.floor(timer/60) .. ":" .. timer%60
-				RoshanInfo2 = math.floor(timer/60-4) .. ":" .. timer%60
+				RoshanInfo1 = math.floor(timer / 60) .. ":" .. timer % 60
+				RoshanInfo2 = math.floor(timer / 60 - 4) .. ":" .. timer % 60
 			end
 		end
 		if Menu.IsEnabled(ShowMeMore.RoshanTimerActivation) then
 			local RoshanPosX = Menu.GetValue(ShowMeMore.RoshanTimerPosX)
 			local RoshanPosY = Menu.GetValue(ShowMeMore.RoshanTimerPosY)
 			if ShowMeMore.RoshanIMG then
-				Renderer.SetDrawColor(255,255,255,Menu.GetValue(ShowMeMore.RoshanTimerVisibility))
-				Renderer.DrawImage(ShowMeMore.RoshanIMG,RoshanPosX,RoshanPosY,Menu.GetValue(ShowMeMore.RoshanTimerSizeImg),math.floor(Menu.GetValue(ShowMeMore.RoshanTimerSizeImg)/2))
+				Renderer.SetDrawColor(255, 255, 255, Menu.GetValue(ShowMeMore.RoshanTimerVisibility))
+				Renderer.DrawImage(ShowMeMore.RoshanIMG, RoshanPosX, RoshanPosY, Menu.GetValue(ShowMeMore.RoshanTimerSizeImg), math.floor(Menu.GetValue(ShowMeMore.RoshanTimerSizeImg) * 0.5))
 			end
 			if RoshanInfo1 == "Alive" then
-				Renderer.SetDrawColor(0,255,0,Menu.GetValue(ShowMeMore.RoshanTimerVisibility))
-				ShowMeMore.DrawTextCentered(ShowMeMore.RoshanFont,math.floor(RoshanPosX + Menu.GetValue(ShowMeMore.RoshanTimerSizeImg)/2),math.floor(Menu.GetValue(ShowMeMore.RoshanTimerSizeImg)/2/2),RoshanInfo1,1)
+				Renderer.SetDrawColor(0, 255, 0, Menu.GetValue(ShowMeMore.RoshanTimerVisibility))
+				ShowMeMore.DrawTextCentered(ShowMeMore.RoshanFont, math.floor(RoshanPosX + Menu.GetValue(ShowMeMore.RoshanTimerSizeImg) * 0.5), math.floor(Menu.GetValue(ShowMeMore.RoshanTimerSizeImg) * 0.25), RoshanInfo1, 1)
 			else
-				Renderer.SetDrawColor(255,0,0,Menu.GetValue(ShowMeMore.RoshanTimerVisibility))
-				ShowMeMore.DrawTextCentered(ShowMeMore.RoshanFont2,math.floor(RoshanPosX + Menu.GetValue(ShowMeMore.RoshanTimerSizeImg)/2),math.floor(RoshanPosY + Menu.GetValue(ShowMeMore.RoshanTimerSizeImg)/2*0.3),RoshanInfo1,1)
-				ShowMeMore.DrawTextCentered(ShowMeMore.RoshanFont2,math.floor(RoshanPosX + Menu.GetValue(ShowMeMore.RoshanTimerSizeImg)/2),math.floor(RoshanPosY + Menu.GetValue(ShowMeMore.RoshanTimerSizeImg)/2*0.7),RoshanInfo2,1)
+				Renderer.SetDrawColor(255, 0, 0, Menu.GetValue(ShowMeMore.RoshanTimerVisibility))
+				ShowMeMore.DrawTextCentered(ShowMeMore.RoshanFont2, math.floor(RoshanPosX + Menu.GetValue(ShowMeMore.RoshanTimerSizeImg) * 0.5), math.floor(RoshanPosY + Menu.GetValue(ShowMeMore.RoshanTimerSizeImg) * 0.5 * 0.3), RoshanInfo1, 1)
+				ShowMeMore.DrawTextCentered(ShowMeMore.RoshanFont2, math.floor(RoshanPosX + Menu.GetValue(ShowMeMore.RoshanTimerSizeImg) * 0.5), math.floor(RoshanPosY + Menu.GetValue(ShowMeMore.RoshanTimerSizeImg) * 0.5 * 0.7), RoshanInfo2, 1)
 			end
 		end
 	end
