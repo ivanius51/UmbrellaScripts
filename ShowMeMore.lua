@@ -68,7 +68,7 @@ ShowMeMore.ShowMeHidenEntityEyesInTheForest = Menu.AddOptionBool({"TheCrazy88","
 function ShowMeMore.OnDraw()
   if not ShowMeMore.InGame or not Heroes.GetLocal() then return end
   if Menu.IsEnabled(ShowMeMore.ShowMeModifierTimer) then
-    ShowMeMore.FuncModifierTimer()
+    ShowMeMore.DrawModifierTimer()
   end
   if ShowMeMore.TawersTable then
     for i,j in pairs(ShowMeMore.TawersTable) do
@@ -107,19 +107,19 @@ function ShowMeMore.OnUpdate()
       ShowMeMore.ModifierFont = Renderer.LoadFont("Arial Black", Menu.GetValue(ShowMeMore.ShowMeModifierTimerSizeFont), Enum.FontWeight.EXTRABOLD)
     end
   end
-  ShowMeMore.FuncTawer()
-  ShowMeMore.FuncMissHero()
-  ShowMeMore.FuncRoshan()
-  ShowMeMore.FuncRuneNotif()
+  ShowMeMore.TawerRange()
+  ShowMeMore.DrawMissHeroTimer()
+  ShowMeMore.RoshanTimer()
+  ShowMeMore.RuneNotifier()
   X1courier, Y1courier = Menu.GetValue(ShowMeMore.CourierOffsetXItemPanel), Menu.GetValue(ShowMeMore.CourierOffsetYItemPanel)
   X2courier, Y2courier = Menu.GetValue(ShowMeMore.CourierOffsetXItemPanel), Menu.GetValue(ShowMeMore.CourierOffsetYItemPanel) + (Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg) + 2) * 2.5
   local AllNPC = NPCs.GetAll()
   for i = 0, #AllNPC  do
     local npc = AllNPC[i]
     if npc and Entity.IsEntity(npc) then
-      ShowMeMore.FuncCouerInf(npc)
-      ShowMeMore.FuncVisByEnemy(npc)
-      ShowMeMore.FuncHidenEntity(npc)
+      ShowMeMore.CourierInformation(npc)
+      ShowMeMore.VisibilityByEnemies(npc)
+      ShowMeMore.DrawHidenEntity(npc)
       if Menu.IsEnabled(ShowMeMore.RoshanActivation) and (Menu.IsEnabled(ShowMeMore.RoshanParticleActivation) or Menu.IsEnabled(ShowMeMore.RoshanTimerActivation)) then
         if NPC.IsRoshan(npc) then
           if Entity.IsAlive(npc) then
@@ -162,7 +162,7 @@ function ShowMeMore.OnUpdate()
   ShowMeMore.InGame = true
 end
 
-function ShowMeMore.FuncCouerInf(npc)
+function ShowMeMore.CourierInformation(npc)
   if Menu.IsEnabled(ShowMeMore.CourierActivation) and ShowMeMore.CanDrawCourier and (Menu.IsEnabled(ShowMeMore.CourierItembar) or Menu.IsEnabled(ShowMeMore.CourierItemPanel)) and NPC.IsCourier(npc) and Entity.IsAlive(npc) then
     if (Menu.IsEnabled(ShowMeMore.CourierOnlyEnemy) and Entity.IsSameTeam(Heroes.GetLocal(), npc)) or not Entity.IsSameTeam(Heroes.GetLocal(), npc) then
       local x,y = Renderer.WorldToScreen(Entity.GetAbsOrigin(npc))
@@ -235,7 +235,7 @@ function ShowMeMore.FuncCouerInf(npc)
   end
 end
 
-function ShowMeMore.FuncVisByEnemy(npc)
+function ShowMeMore.VisibilityByEnemies(npc)
   if Menu.IsEnabled(ShowMeMore.ShowMeEnemyActivation) and not Entity.IsHero(npc) and Entity.IsAlive(npc) and Entity.IsSameTeam(Heroes.GetLocal(), npc) and NPC.IsVisibleToEnemies(npc) and not ShowMeEnemyTableParticle[npc] then
     if Menu.IsEnabled(ShowMeMore.ShowSummonsActivation) and NPC.IsCreep(npc) then
       ShowMeEnemyTableParticle[npc] = Particle.Create(Shivas, Enum.ParticleAttachment.PATTACH_ABSORIGIN_FOLLOW,npc)
@@ -247,7 +247,7 @@ function ShowMeMore.FuncVisByEnemy(npc)
   end
 end
 
-function ShowMeMore.FuncHidenEntity(npc)
+function ShowMeMore.DrawHidenEntity(npc)
   if Menu.IsEnabled(ShowMeMore.ShowMeHidenEntity) and not Entity.IsSameTeam(npc, Heroes.GetLocal()) then
     if NPC.GetUnitName(npc) == "npc_dota_templar_assassin_psionic_trap" or NPC.GetUnitName(npc) == "npc_dota_treant_eyes" then
       local x, y = Renderer.WorldToScreen(Entity.GetAbsOrigin(npc))
@@ -263,7 +263,7 @@ function ShowMeMore.FuncHidenEntity(npc)
   end
 end
 
-function ShowMeMore.FuncRuneNotif()
+function ShowMeMore.RuneNotifier()
   if Menu.IsEnabled(ShowMeMore.RuneNotificationActivation) and GameRules.GetGameState() == 5 then
     local usertimer = Menu.GetValue(ShowMeMore.RuneNotificationTime)
     local runetime = (GameRules.GetGameTime() - GameRules.GetGameStartTime() + 60 - usertimer) % 120
@@ -282,7 +282,7 @@ function ShowMeMore.FuncRuneNotif()
   end
 end
 
-function ShowMeMore.FuncRoshan()
+function ShowMeMore.RoshanTimer()
   if Menu.IsEnabled(ShowMeMore.RoshanActivation) and (Menu.IsEnabled(ShowMeMore.RoshanParticleActivation) or Menu.IsEnabled(ShowMeMore.RoshanTimerActivation)) then
     local RoshanInfo1 = ""
     local RoshanInfo2 = ""
@@ -330,7 +330,7 @@ function ShowMeMore.FuncRoshan()
   end
 end
 
-function ShowMeMore.FuncModifierTimer()
+function ShowMeMore.DrawModifierTimer()
   local herocount = Heroes.GetAll()
   for i = 0, #herocount do
     local hero = herocount[i]
@@ -378,7 +378,7 @@ function ShowMeMore.FuncModifierTimer()
   end
 end
 
-function ShowMeMore.FuncMissHero()
+function ShowMeMore.DrawMissHeroTimer()
   if Menu.IsEnabled(ShowMeMore.MissingHeroActivation) and ShowMeMore.CanDrawMissingHero then
     local heroescount = Heroes.GetAll()
     for i = 0, #heroescount do
@@ -439,7 +439,7 @@ function ShowMeMore.FuncMissHero()
   end
 end
 
-function ShowMeMore.FuncTawer()
+function ShowMeMore.TawerRange()
   if ShowMeMore.TawersTable then
     for tawer,tawerinfo in pairs(ShowMeMore.TawersTable) do
       if tawer and Entity.IsEntity(tawer) then
