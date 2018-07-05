@@ -65,23 +65,17 @@ ShowMeMore.ShowMeHidenEntitySizeImg = Menu.AddOptionSlider({"TheCrazy88","ShowMe
 ShowMeMore.ShowMeHidenEntityPsionicTrap = Menu.AddOptionBool({"TheCrazy88","ShowMeMore","Hiden Entity"},"Show Me Psionic Trap", true)
 ShowMeMore.ShowMeHidenEntityEyesInTheForest = Menu.AddOptionBool({"TheCrazy88","ShowMeMore","Hiden Entity"},"Show Me Eyes In The Forest", true)
 
-ShowMeMore.Font = Renderer.LoadFont("Tahoma", 30, Enum.FontWeight.EXTRABOLD)
-ShowMeMore.RoshanFont = nil
-ShowMeMore.RoshanFont2 = nil
-ShowMeMore.MissingHeroFont = nil
-ShowMeMore.ModifierFont = nil
-
 function ShowMeMore.OnDraw()
 	if not ShowMeMore.InGame or not Heroes.GetLocal() then return end
 	do
 		if not ShowMeMore.RoshanFont then
-			ShowMeMore.RoshanFont = Renderer.LoadFont("Tahoma", math.floor(Menu.GetValue(ShowMeMore.RoshanTimerSizeImg)*0.483), Enum.FontWeight.EXTRABOLD)
+			ShowMeMore.RoshanFont = Renderer.LoadFont("Tahoma", math.floor(Menu.GetValue(ShowMeMore.RoshanTimerSizeImg) * 0.483), Enum.FontWeight.EXTRABOLD)
 		end
 		if not ShowMeMore.RoshanFont2 then
-			ShowMeMore.RoshanFont2 = Renderer.LoadFont("Tahoma", math.floor(Menu.GetValue(ShowMeMore.RoshanTimerSizeImg)*0.3571), Enum.FontWeight.EXTRABOLD)
+			ShowMeMore.RoshanFont2 = Renderer.LoadFont("Tahoma", math.floor(Menu.GetValue(ShowMeMore.RoshanTimerSizeImg) * 0.3571), Enum.FontWeight.EXTRABOLD)
 		end
 		if not ShowMeMore.MissingHeroFont then
-			ShowMeMore.MissingHeroFont = Renderer.LoadFont("Arial Black", math.floor(Menu.GetValue(ShowMeMore.MissingHeroSizeImg)*1.5), Enum.FontWeight.EXTRABOLD)
+			ShowMeMore.MissingHeroFont = Renderer.LoadFont("Arial Black", math.floor(Menu.GetValue(ShowMeMore.MissingHeroSizeImg) * 1.5), Enum.FontWeight.EXTRABOLD)
 		end
 		if not ShowMeMore.ModifierFont then
 			ShowMeMore.ModifierFont = Renderer.LoadFont("Arial Black", Menu.GetValue(ShowMeMore.ShowMeModifierTimerSizeFont), Enum.FontWeight.EXTRABOLD)
@@ -94,18 +88,19 @@ function ShowMeMore.OnDraw()
 	if Menu.IsEnabled(ShowMeMore.MissingHeroActivation) and ShowMeMore.CanDrawMissingHero then
 		ShowMeMore.MissHeroFunc()
 	end
-	local X1courier,Y1courier = Menu.GetValue(ShowMeMore.CourierOffsetXItemPanel),Menu.GetValue(ShowMeMore.CourierOffsetYItemPanel)
-	local X2courier,Y2courier = Menu.GetValue(ShowMeMore.CourierOffsetXItemPanel),Menu.GetValue(ShowMeMore.CourierOffsetYItemPanel)+(Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg)+2)*2.5
-	for _,npc in pairs(NPCs.GetAll()) do
+	local X1courier, Y1courier = Menu.GetValue(ShowMeMore.CourierOffsetXItemPanel), Menu.GetValue(ShowMeMore.CourierOffsetYItemPanel)
+	local X2courier, Y2courier = Menu.GetValue(ShowMeMore.CourierOffsetXItemPanel), Menu.GetValue(ShowMeMore.CourierOffsetYItemPanel) + (Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg) + 2) * 2.5
+	for i = 0, NPCs.Count() do
+		local npc = NPCs.Get(i)
 		if npc and Entity.IsEntity(npc) then
 			if Menu.IsEnabled(ShowMeMore.CourierActivation) and ShowMeMore.CanDrawCourier and (Menu.IsEnabled(ShowMeMore.CourierItembar) or Menu.IsEnabled(ShowMeMore.CourierItemPanel)) then
 				if NPC.IsCourier(npc) and Entity.IsAlive(npc) then
 					local x,y,v = Renderer.WorldToScreen(Entity.GetAbsOrigin(npc))
 					local x = x - Menu.GetValue(ShowMeMore.CourierOffsetXitembar)
 					local y = y - Menu.GetValue(ShowMeMore.CourierOffsetYitembar)
-					for i=0,15 do
-						local item = NPC.GetItemByIndex(npc,i) 
-						if item and Entity.IsEntity(item) and Entity.IsAbility(item) and ((not Menu.IsEnabled(ShowMeMore.CourierOnlyEnemy) and Entity.IsSameTeam(Heroes.GetLocal(),npc)) or not Entity.IsSameTeam(Heroes.GetLocal(),npc)) then
+					for i = 0, 15 do
+						local item = NPC.GetItemByIndex(npc, i) 
+						if item and Entity.IsEntity(item) and Entity.IsAbility(item) and ((not Menu.IsEnabled(ShowMeMore.CourierOnlyEnemy) and Entity.IsSameTeam(Heroes.GetLocal(), npc)) or not Entity.IsSameTeam(Heroes.GetLocal(), npc)) then
 							if not TableIMG[Ability.GetName(item)] then
 								if Ability.GetName(item):find("item_recipe_") then
 									TableIMG[Ability.GetName(item)] = Renderer.LoadImage("resource/flash3/images/items/recipe.png")
@@ -114,7 +109,8 @@ function ShowMeMore.OnDraw()
 								end
 							end
 							local OwnerImg = nil
-							for _,hero in pairs(Heroes.GetAll()) do
+							for i = 0, Heroes.Count() do
+								local hero = Heroes.Get(i)
 								if hero and Entity.IsEntity(hero) and Hero.GetPlayerID(hero) == Item.GetPlayerOwnerID(item) then
 									if not TableIMG[hero] then
 										TableIMG[hero] = Renderer.LoadImage("resource/flash3/images/heroes/selection/".. NPC.GetUnitName(hero) ..".png")
@@ -124,32 +120,32 @@ function ShowMeMore.OnDraw()
 							end
 							local ItemImg = TableIMG[Ability.GetName(item)]
 							if Menu.IsEnabled(ShowMeMore.CourierItembar) and not Entity.IsDormant(npc) then
-								Renderer.SetDrawColor(255,255,255,Menu.GetValue(ShowMeMore.CourierItemBarVisibility))
+								Renderer.SetDrawColor(255, 255, 255, Menu.GetValue(ShowMeMore.CourierItemBarVisibility))
 								if x and y and v then
 									if ItemImg then
-										Renderer.DrawImage(ItemImg,x,y,Menu.GetValue(ShowMeMore.CourierItemBarSizeImg),Menu.GetValue(ShowMeMore.CourierItemBarSizeImg))
+										Renderer.DrawImage(ItemImg, x, y, Menu.GetValue(ShowMeMore.CourierItemBarSizeImg), Menu.GetValue(ShowMeMore.CourierItemBarSizeImg))
 									end
 									if OwnerImg then
-										local x = x + (Menu.GetValue(ShowMeMore.CourierItemBarSizeImg) * 0.2 / 2)
-										Renderer.DrawImage(OwnerImg,x,y - (Menu.GetValue(ShowMeMore.CourierItemBarSizeImg) + 2),math.ceil(Menu.GetValue(ShowMeMore.CourierItemBarSizeImg)*0.85),Menu.GetValue(ShowMeMore.CourierItemBarSizeImg))
+										local x = x + (Menu.GetValue(ShowMeMore.CourierItemBarSizeImg) * 0.2 * 0.5)
+										Renderer.DrawImage(OwnerImg, x, y - (Menu.GetValue(ShowMeMore.CourierItemBarSizeImg) + 2), math.ceil(Menu.GetValue(ShowMeMore.CourierItemBarSizeImg) * 0.85), Menu.GetValue(ShowMeMore.CourierItemBarSizeImg))
 									end
 									x = x + Menu.GetValue(ShowMeMore.CourierItemBarSizeImg) + 2
 								end
 							end
 							if Menu.IsEnabled(ShowMeMore.CourierItemPanel) then
-								Renderer.SetDrawColor(255,255,255,Menu.GetValue(ShowMeMore.CourierItemPanelVisibility))
-								local x,y
+								Renderer.SetDrawColor(255, 255, 255, Menu.GetValue(ShowMeMore.CourierItemPanelVisibility))
+								local x, y
 								if Entity.GetTeamNum(npc) == 2 then
 									X1courier = X1courier + Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg) + 2
-									x,y = X1courier,Y1courier
+									x, y = X1courier, Y1courier
 									if CourierRadiant then
-										Renderer.DrawImage(CourierRadiant,Menu.GetValue(ShowMeMore.CourierOffsetXItemPanel),Menu.GetValue(ShowMeMore.CourierOffsetYItemPanel)-(Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg)+2)/2,Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg),Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg))
+										Renderer.DrawImage(CourierRadiant, Menu.GetValue(ShowMeMore.CourierOffsetXItemPanel), Menu.GetValue(ShowMeMore.CourierOffsetYItemPanel) - (Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg) + 2) * 2, Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg), Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg))
 									end
 								else
 									X2courier = X2courier + Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg) + 2
-									x,y = X2courier,Y2courier
+									x, y = X2courier, Y2courier
 									if CourierDire then
-										Renderer.DrawImage(CourierDire,Menu.GetValue(ShowMeMore.CourierOffsetXItemPanel),Menu.GetValue(ShowMeMore.CourierOffsetYItemPanel)+(Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg)+2)*2,Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg),Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg))
+										Renderer.DrawImage(CourierDire, Menu.GetValue(ShowMeMore.CourierOffsetXItemPanel), Menu.GetValue(ShowMeMore.CourierOffsetYItemPanel) + (Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg) + 2) * 2, Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg), Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg))
 									end
 								end
 								if x and y then
@@ -157,8 +153,8 @@ function ShowMeMore.OnDraw()
 										Renderer.DrawImage(ItemImg,x,y,Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg),Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg))
 									end
 									if OwnerImg then
-										local x = x + (Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg) * 0.2 / 2)
-										Renderer.DrawImage(OwnerImg,x,y - (Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg) + 2),math.ceil(Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg)*0.85),Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg))
+										local x = x + (Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg) * 0.2 * 0.5)
+										Renderer.DrawImage(OwnerImg,x,y - (Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg) + 2),math.ceil(Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg) * 0.85),Menu.GetValue(ShowMeMore.CourierItemPanelSizeImg))
 									end
 								end
 							end
@@ -269,8 +265,7 @@ end
 
 function ShowMeMore.OnUpdate()
 	if not Menu.IsEnabled(ShowMeMore.optionEnable) and not Heroes.Contains(Heroes.GetLocal()) then ShowMeMore.InGame = false return end
-
-	if TableParticle then
+	if TableParticle and #TableParticle > 0 then
 		for npc,particle in pairs(TableParticle) do
 			if Entity.IsEntity(npc) and not Entity.IsAlive(npc) then
 				if particle then
@@ -281,7 +276,7 @@ function ShowMeMore.OnUpdate()
 			end
 		end
 	end
-	if ShowMeEnemyTableParticle then
+	if ShowMeEnemyTableParticle and #ShowMeEnemyTableParticle > 0 then
 		for npc,particle in pairs(ShowMeEnemyTableParticle) do
 			if Entity.IsEntity(npc) and (not Entity.IsAlive(npc) or not NPC.IsVisibleToEnemies(npc)) then
 				Particle.Destroy(ShowMeEnemyTableParticle[npc])
@@ -299,34 +294,33 @@ function ShowMeMore.OnUpdate()
 end
 
 function ShowMeMore.ModifierTimerFunc()
-	for _,hero in pairs(Heroes.GetAll()) do
+	for i = 0, Heroes.Count() do
+		local hero = Heroes.Get(i)
 		if hero and Entity.IsEntity(hero) and not NPC.IsIllusion(hero) and Entity.IsAlive(hero) and not Entity.IsDormant(hero) then
 			local hasmodifier = ShowMeMore.GetModifiersOnNps(hero)
 			local sizeimg = Menu.GetValue(ShowMeMore.ShowMeModifierTimerSizeIMG)
-			local x,y,v = Renderer.WorldToScreen(Entity.GetAbsOrigin(hero))
-			if x and y and v then 
-				x = x-(sizeimg*#hasmodifier)/2
+			local x, y, v = Renderer.WorldToScreen(Entity.GetAbsOrigin(hero))
+			if x and y and v then
+				x = x - (sizeimg * #hasmodifier) * 0.5
 				y = y + Menu.GetValue(ShowMeMore.ShowMeModifierTimerYoffset)
 				for _,modifier in pairs(hasmodifier) do
 					if modifier and Entity.IsAbility(Modifier.GetAbility(modifier)) and Modifier.GetDieTime(modifier) - GameRules.GetGameTime() > -0.01 then
 						local AbilNameMod = Ability.GetName(Modifier.GetAbility(modifier))
-						local Time = math.floor((Modifier.GetDieTime(modifier) - GameRules.GetGameTime())*10)/10
+						local Time = math.floor((Modifier.GetDieTime(modifier) - GameRules.GetGameTime()) * 10) * 0.1
 						if Menu.IsEnabled(ShowMeMore.ShowMeModifierTimerAdaptiveFont) then
 							if ShowMeMore.ModifierFont then
-								local xsize,ysize = Renderer.GetTextSize(ShowMeMore.ModifierFont, Time)
+								local xsize, ysize = Renderer.GetTextSize(ShowMeMore.ModifierFont, Time)
 								if xsize ~= sizeimg then
-									needsize = sizeimg/xsize*ysize
+									needsize = sizeimg / xsize * ysize
 									ShowMeMore.ModifierFont = Renderer.LoadFont("Arial Black", math.floor(needsize), Enum.FontWeight.EXTRABOLD)
 								end
 							end
-						else
-
 						end
 						if not ShowMeMore.ModifierTable[AbilNameMod] then
-							if string.find(AbilNameMod,"item_") then
-								ShowMeMore.ModifierTable[AbilNameMod] = Renderer.LoadImage("resource/flash3/images/items/".. AbilNameMod:gsub("item_", "") ..".png")
+							if string.find(AbilNameMod, "item_") then
+								ShowMeMore.ModifierTable[AbilNameMod] = Renderer.LoadImage("resource/flash3/images/items/" .. AbilNameMod:gsub("item_", "") .. ".png")
 							else
-								ShowMeMore.ModifierTable[AbilNameMod] = Renderer.LoadImage("resource/flash3/images/spellicons/".. AbilNameMod ..".png")
+								ShowMeMore.ModifierTable[AbilNameMod] = Renderer.LoadImage("resource/flash3/images/spellicons/" .. AbilNameMod .. ".png")
 							end
 						end
 						local AbilIMG = ShowMeMore.ModifierTable[AbilNameMod]
@@ -334,7 +328,7 @@ function ShowMeMore.ModifierTimerFunc()
 							Renderer.SetDrawColor(255, 255, 255, Menu.GetValue(ShowMeMore.ShowMeModifierTimerTransparent))
 							Renderer.DrawImage(AbilIMG, x, y, sizeimg, sizeimg)
 							Renderer.SetDrawColor(Menu.GetValue(ShowMeMore.ShowMeModifierTimerRedColor), Menu.GetValue(ShowMeMore.ShowMeModifierTimerGreenColor), Menu.GetValue(ShowMeMore.ShowMeModifierTimerBlueColor), Menu.GetValue(ShowMeMore.ShowMeModifierTimerTransparent))
-							ShowMeMore.DrawTextCentered(ShowMeMore.ModifierFont, math.floor(x+(sizeimg/2)), math.floor(y+(sizeimg/2)), Time, 1)
+							ShowMeMore.DrawTextCentered(ShowMeMore.ModifierFont, math.floor(x + (sizeimg * 0.5)), math.floor(y + (sizeimg * 0.5)), Time, 1)
 							x = x + sizeimg
 						end
 					end
@@ -345,7 +339,8 @@ function ShowMeMore.ModifierTimerFunc()
 end
 
 function ShowMeMore.MissHeroFunc()
-	for i,j in pairs(Heroes.GetAll()) do
+	for i = 0, Heroes.Count() do
+        local j = Heroes.Get(i)
 		if j and Entity.IsEntity(j) and not Entity.IsSameTeam(Heroes.GetLocal(),j) then
 			if not ShowMeMore.MissingHeroTable[j] then
 				ShowMeMore.MissingHeroTable[j] = {timer = 0, triger = false}
@@ -374,30 +369,30 @@ function ShowMeMore.MissHeroFunc()
 			end
 			local HeroIMG = TableIMG[npc]
 			if HeroIMG then
-				Renderer.SetDrawColor(255,255,255,Menu.GetValue(ShowMeMore.MissingVisibility))
-				Renderer.DrawImage(HeroIMG,math.ceil(PosX),math.ceil(PosY),math.ceil(SizeIMG*0.85),math.ceil(SizeIMG))
+				Renderer.SetDrawColor(255, 255, 255, Menu.GetValue(ShowMeMore.MissingVisibility))
+				Renderer.DrawImage(HeroIMG,math.ceil(PosX),math.ceil(PosY),math.ceil(SizeIMG * 0.85),math.ceil(SizeIMG))
 			end
 			PosX = PosX + SizeIMG
 			if Menu.IsEnabled(ShowMeMore.MissingHeroBlackBackground) then
-				Renderer.SetDrawColor(0,0,0,Menu.GetValue(ShowMeMore.MissingVisibility))
-				Renderer.DrawFilledRect(PosX,math.ceil(PosY),math.ceil(SizeIMG*4),math.ceil(SizeIMG))
+				Renderer.SetDrawColor(0, 0, 0, Menu.GetValue(ShowMeMore.MissingVisibility))
+				Renderer.DrawFilledRect(PosX,math.ceil(PosY),math.ceil(SizeIMG * 4),math.ceil(SizeIMG))
 			end
-			Renderer.SetDrawColor(255,255,255,Menu.GetValue(ShowMeMore.MissingVisibility))
+			Renderer.SetDrawColor(255, 255, 255, Menu.GetValue(ShowMeMore.MissingVisibility))
 			if info.timer > 0 then
 				local timetoinvis = GameRules.GetGameTime() - info.timer
 				local timeforwrite 
-				if timetoinvis%60 < 10 then
-					timeforwrite = "" .. math.floor(timetoinvis/60) .. ":0" .. math.floor(timetoinvis%60) .. ""
+				if timetoinvis % 60 < 10 then
+					timeforwrite = "" .. math.floor(timetoinvis / 60) .. ":0" .. math.floor(timetoinvis % 60) .. ""
 				else
-					timeforwrite = "" .. math.floor(timetoinvis/60) .. ":" .. math.floor(timetoinvis%60) .. ""
+					timeforwrite = "" .. math.floor(timetoinvis / 60) .. ":" .. math.floor(timetoinvis % 60) .. ""
 				end
-				ShowMeMore.DrawTextCentered(ShowMeMore.MissingHeroFont, math.ceil(PosX+SizeIMG*4/2),math.ceil(PosY+SizeIMG/2), timeforwrite,1)
+				ShowMeMore.DrawTextCentered(ShowMeMore.MissingHeroFont, math.ceil(PosX + SizeIMG * 4 * 0.5),math.ceil(PosY + SizeIMG * 0.5), timeforwrite,1)
 			else
-				ShowMeMore.DrawTextCentered(ShowMeMore.MissingHeroFont, math.ceil(PosX+SizeIMG*4/2),math.ceil(PosY+SizeIMG/2), "Visible",1)
+				ShowMeMore.DrawTextCentered(ShowMeMore.MissingHeroFont, math.ceil(PosX + SizeIMG * 4 * 0.5),math.ceil(PosY + SizeIMG * 0.5), "Visible",1)
 			end
 		end
 		PosX = Menu.GetValue(ShowMeMore.MissingHeroOffsetX)
-		PosY = PosY + SizeIMG + SizeIMG*0.05
+		PosY = PosY + SizeIMG + SizeIMG * 0.05
 	end
 end
 
@@ -430,7 +425,8 @@ function ShowMeMore.TawerFunc()
 		end
 	end
 	if Menu.IsEnabled(ShowMeMore.ShowTawerRange) then
-		for i,j in pairs(NPCs.GetAll()) do
+		for i = 0, NPCs.Count() do
+			local j = NPCs.Get(i)
 			if j and Entity.IsEntity(j) and NPC.IsStructure(j) and Entity.IsAlive(j) and NPC.IsTower(j) then
 				if not ShowMeMore.TawersTable[j] then
 					if not Entity.IsSameTeam(j,Heroes.GetLocal()) or (Menu.IsEnabled(ShowMeMore.ShowTawerRangeOnlyEnemy) and Entity.IsSameTeam(j,Heroes.GetLocal())) then 
@@ -443,8 +439,8 @@ function ShowMeMore.TawerFunc()
 				end
 			end
 		end
-		if ShowMeMore.TawersTable and ShowMeMore.TawerUpdateTiming < GameRules.GetGameTime() then
-			for i,j in pairs(ShowMeMore.TawersTable) do
+		if ShowMeMore.TawersTable and #ShowMeMore.TawersTable ~= 0 and ShowMeMore.TawerUpdateTiming < GameRules.GetGameTime() then
+			for _,j in pairs(ShowMeMore.TawersTable) do
 				if j then
 					if not j.particle then
 						j.particle = Particle.Create(TawerRing)
@@ -490,11 +486,11 @@ function ShowMeMore.OnMenuOptionChange(option, oldValue, newValue)
 		ShowMeMore.ModifierFont = Renderer.LoadFont("Arial Black", newValue, Enum.FontWeight.EXTRABOLD)
 	end
 	if ShowMeMore.RoshanTimerSizeImg == option then
-		ShowMeMore.RoshanFont = Renderer.LoadFont("Tahoma", math.floor(newValue*0.483), Enum.FontWeight.EXTRABOLD)
-		ShowMeMore.RoshanFont2 = Renderer.LoadFont("Tahoma", math.floor(newValue*0.3571), Enum.FontWeight.EXTRABOLD)
+		ShowMeMore.RoshanFont = Renderer.LoadFont("Tahoma", math.floor(newValue * 0.483), Enum.FontWeight.EXTRABOLD)
+		ShowMeMore.RoshanFont2 = Renderer.LoadFont("Tahoma", math.floor(newValue * 0.3571), Enum.FontWeight.EXTRABOLD)
 	end
 	if ShowMeMore.MissingHeroSizeImg == option then
-		ShowMeMore.MissingHeroFont = Renderer.LoadFont("Arial Black", math.ceil(newValue*1.5), Enum.FontWeight.EXTRABOLD)
+		ShowMeMore.MissingHeroFont = Renderer.LoadFont("Arial Black", math.ceil(newValue * 1.5), Enum.FontWeight.EXTRABOLD)
 	end
 	if ShowMeMore.ShowMeEnemyParticle == option then
 		if ShowMeEnemyTableParticle then
@@ -516,7 +512,7 @@ end
 
 function ShowMeMore.DrawTextCentered(p1, p2, p3, p4, p5)
 	local wide, tall = Renderer.GetTextSize(p1, p4)
-	return Renderer.DrawText(p1, p2 - wide/2 , p3 - tall/2, p4)
+	return Renderer.DrawText(p1, p2 - wide * 0.5 , p3 - tall * 0.5, p4)
 end
 
 function ShowMeMore.GetModifiersOnNps(npc)
@@ -546,7 +542,6 @@ function ShowMeMore.init()
 	TableIMG = {}
 	ShowMeMore.MissingHeroTable = {}
 	ShowMeMore.ModifierTable = {}
-	TrueSide = "particles/econ/wards/f2p/f2p_ward/ward_true_sight.vpcf"
 	RoshanTimer = "particles/neutral_fx/roshan_timer.vpcf"
 	Shivas = "particles/items_fx/aura_shivas.vpcf"
 	TawerRing = "particles/ui_mouseactions/range_finder_tower_aoe.vpcf"	
@@ -555,11 +550,19 @@ function ShowMeMore.init()
 	ShowMeMore.RoshanIMG = Renderer.LoadImage("resource/flash3/images/heroes/roshan.png")
 	TreantTreeIMG = Renderer.LoadImage("resource/flash3/images/spellicons/treant_eyes_in_the_forest.png")
 	PsionicTrapIMG = Renderer.LoadImage("resource/flash3/images/spellicons/templar_assassin_psionic_trap.png")
+	ShowMeMore.Font = Renderer.LoadFont("Tahoma", 30, Enum.FontWeight.EXTRABOLD)
+	ShowMeMore.RoshanFont = nil
+	ShowMeMore.RoshanFont2 = nil
+	ShowMeMore.MissingHeroFont = nil
+	ShowMeMore.ModifierFont = nil
 end
 function ShowMeMore.OnGameStart()
 	ShowMeMore.init()
 end
 function ShowMeMore.OnGameEnd()
+	ShowMeMore.init()
+end
+function ShowMeMore.OnScriptLoad()
 	ShowMeMore.init()
 end
 ShowMeMore.init()
