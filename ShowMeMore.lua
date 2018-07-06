@@ -74,7 +74,7 @@ function ShowMeMore.OnDraw()
     for i,j in pairs(ShowMeMore.TawersTable) do
       if j and Entity.IsEntity(i) then
         if j.particle then
-          if j.target and (not Entity.IsEntity(j.target) or not Entity.IsAlive(j.target) or j.timer < GameRules.GetGameTime()) then
+          if j.target and (not Entity.IsEntity(j.target) or not Entity.IsAlive(j.target) or j.timer < GameTime) then
             j.target = nil
           end
           if Menu.IsEnabled(ShowMeMore.ShowTawerRangeDrawTarget) then
@@ -94,6 +94,9 @@ end
 function ShowMeMore.OnUpdate()
   if not Menu.IsEnabled(ShowMeMore.optionEnable) and not Heroes.Contains(Heroes.GetLocal()) then ShowMeMore.InGame = false return end
   do
+    if not ShowMeMore.Font then
+      ShowMeMore.Font = Renderer.LoadFont("Tahoma", 30, Enum.FontWeight.EXTRABOLD)
+    end
     if not ShowMeMore.RoshanFont then
       ShowMeMore.RoshanFont = Renderer.LoadFont("Tahoma", math.floor(Menu.GetValue(ShowMeMore.RoshanTimerSizeImg) * 0.483), Enum.FontWeight.EXTRABOLD)
     end
@@ -106,7 +109,23 @@ function ShowMeMore.OnUpdate()
     if not ShowMeMore.ModifierFont then
       ShowMeMore.ModifierFont = Renderer.LoadFont("Arial Black", Menu.GetValue(ShowMeMore.ShowMeModifierTimerSizeFont), Enum.FontWeight.EXTRABOLD)
     end
+    if not CourierRadiant then
+      CourierRadiant = Renderer.LoadImage("resource/flash3/images/items/courier_radiant.png")
+    end
+    if not CourierDire then
+      CourierDire = Renderer.LoadImage("resource/flash3/images/items/courier_dire.png")
+    end
+    if not ShowMeMore.RoshanIMG then
+      ShowMeMore.RoshanIMG = Renderer.LoadImage("resource/flash3/images/heroes/roshan.png")
+    end
+    if not TreantTreeIMG then
+      TreantTreeIMG = Renderer.LoadImage("resource/flash3/images/spellicons/treant_eyes_in_the_forest.png")
+    end
+    if not PsionicTrapIMG then
+      PsionicTrapIMG = Renderer.LoadImage("resource/flash3/images/spellicons/templar_assassin_psionic_trap.png")
+    end
   end
+  GameTime = GameRules.GetGameTime()
   ShowMeMore.TawerRange()
   ShowMeMore.DrawMissHeroTimer()
   ShowMeMore.RoshanTimer()
@@ -127,7 +146,7 @@ function ShowMeMore.OnUpdate()
           else
             if ShowMeMore.RoshanAlive then
               ShowMeMore.RoshanAlive = false
-              ShowMeMore.RoshanTimeDead = GameRules.GetGameTime() + 660
+              ShowMeMore.RoshanTimeDead = GameTime + 660
             end
           end
         end
@@ -179,9 +198,9 @@ function ShowMeMore.CourierInformation(npc)
             end
           end
           local OwnerImg = nil
-          local count = Heroes.GetAll()
-          for i = 0, #count do
-            local hero = count[i]
+          local HeroesAll = Heroes.GetAll()
+          for i = 0, #HeroesAll do
+            local hero = HeroesAll[i]
             if hero and Entity.IsEntity(hero) and Hero.GetPlayerID(hero) == Item.GetPlayerOwnerID(item) then
               if not TableIMG[hero] then
                 TableIMG[hero] = Renderer.LoadImage("resource/flash3/images/heroes/selection/".. NPC.GetUnitName(hero) ..".png")
@@ -266,8 +285,8 @@ end
 function ShowMeMore.RuneNotifier()
   if Menu.IsEnabled(ShowMeMore.RuneNotificationActivation) and GameRules.GetGameState() == 5 then
     local usertimer = Menu.GetValue(ShowMeMore.RuneNotificationTime)
-    local runetime = (GameRules.GetGameTime() - GameRules.GetGameStartTime() + 60 - usertimer) % 120
-    local bauntirune = (GameRules.GetGameTime() - GameRules.GetGameStartTime() + 60 - usertimer) % 300
+    local runetime = (GameTime - GameRules.GetGameStartTime() + 60 - usertimer) % 120
+    local bauntirune = (GameTime - GameRules.GetGameStartTime() + 60 - usertimer) % 300
     local timecheck1 = runetime >= 0 and runetime < 0.5 or bauntirune >= 0 and bauntirune < 0.5
     local timecheck2 = runetime >= 0.5 and runetime < 1 or bauntirune >= 0.5 and bauntirune < 1
     if timecheck1 and not RuneNotif then
@@ -302,7 +321,7 @@ function ShowMeMore.RoshanTimer()
           Particle.SetControlPoint(ShowMeMore.RoshanData, 13, Vector(480.0, 74.0, 1.0))
         end
       end
-      local timer = math.floor(ShowMeMore.RoshanTimeDead - GameRules.GetGameTime())
+      local timer = math.floor(ShowMeMore.RoshanTimeDead - GameTime)
       if timer % 60 < 10 then
         RoshanInfo1 = math.floor(timer / 60) .. ":0" .. timer % 60
         RoshanInfo2 = math.floor(timer / 60 - 4) .. ":0" .. timer % 60
@@ -331,9 +350,9 @@ function ShowMeMore.RoshanTimer()
 end
 
 function ShowMeMore.DrawModifierTimer()
-  local herocount = Heroes.GetAll()
-  for i = 0, #herocount do
-    local hero = herocount[i]
+  local HeroesAll = Heroes.GetAll()
+  for i = 0, #HeroesAll do
+    local hero = HeroesAll[i]
     if hero and Entity.IsEntity(hero) and not NPC.IsIllusion(hero) and Entity.IsAlive(hero) and not Entity.IsDormant(hero) then
       if (Menu.IsEnabled(ShowMeMore.ShowMeModifierTimerAlliesEnt) and Entity.IsSameTeam(Heroes.GetLocal(), hero)) or not Entity.IsSameTeam(Heroes.GetLocal(), hero) then
         local hasmodifier = ShowMeMore.GetModifiersOnNps(hero)
@@ -343,9 +362,9 @@ function ShowMeMore.DrawModifierTimer()
           x = x - (sizeimg * #hasmodifier) * 0.5
           y = y + Menu.GetValue(ShowMeMore.ShowMeModifierTimerYoffset)
           for _,modifier in pairs(hasmodifier) do
-            if modifier and Entity.IsAbility(Modifier.GetAbility(modifier)) and Modifier.GetDieTime(modifier) - GameRules.GetGameTime() > -0.01 then
+            if modifier and Entity.IsAbility(Modifier.GetAbility(modifier)) and Modifier.GetDieTime(modifier) - GameTime > -0.01 then
               local AbilNameMod = Ability.GetName(Modifier.GetAbility(modifier))
-              local Time = math.floor((Modifier.GetDieTime(modifier) - GameRules.GetGameTime()) * 10) * 0.1
+              local Time = math.floor((Modifier.GetDieTime(modifier) - GameTime) * 10) * 0.1
               if Menu.IsEnabled(ShowMeMore.ShowMeModifierTimerAdaptiveFont) then
                 if ShowMeMore.ModifierFont then
                   local xsize, ysize = Renderer.GetTextSize(ShowMeMore.ModifierFont, Time)
@@ -380,9 +399,9 @@ end
 
 function ShowMeMore.DrawMissHeroTimer()
   if Menu.IsEnabled(ShowMeMore.MissingHeroActivation) and ShowMeMore.CanDrawMissingHero then
-    local heroescount = Heroes.GetAll()
-    for i = 0, #heroescount do
-      local j = heroescount[i]
+    local HeroesAll = Heroes.GetAll()
+    for i = 0, #HeroesAll do
+      local j = HeroesAll[i]
       if j and Entity.IsEntity(j) and not Entity.IsSameTeam(Heroes.GetLocal(),j) then
         if not ShowMeMore.MissingHeroTable[j] then
           ShowMeMore.MissingHeroTable[j] = {timer = 0, triger = false}
@@ -395,7 +414,7 @@ function ShowMeMore.DrawMissHeroTimer()
     for npc,info in pairs(ShowMeMore.MissingHeroTable) do
       if npc and Entity.IsEntity(npc) then
         if (not Entity.IsAlive(npc) or Entity.IsDormant(npc)) and not info.triger then
-          info.timer = GameRules.GetGameTime()
+          info.timer = GameTime
           info.triger = true
         elseif Entity.IsAlive(npc) and not Entity.IsDormant(npc) and info.triger then
           info.timer = 0
@@ -421,7 +440,7 @@ function ShowMeMore.DrawMissHeroTimer()
         end
         Renderer.SetDrawColor(255, 255, 255, Menu.GetValue(ShowMeMore.MissingVisibility))
         if info.timer > 0 then
-          local timetoinvis = GameRules.GetGameTime() - info.timer
+          local timetoinvis = GameTime - info.timer
           local timeforwrite 
           if timetoinvis % 60 < 10 then
             timeforwrite = "" .. math.floor(timetoinvis / 60) .. ":0" .. math.floor(timetoinvis % 60) .. ""
@@ -477,12 +496,12 @@ function ShowMeMore.TawerRange()
             ShowMeMore.TawersTable[j].particle = nil
             ShowMeMore.TawersTable[j].target = nil
             ShowMeMore.TawersTable[j].timer = 0
-            ShowMeMore.TawerUpdateTiming = GameRules.GetGameTime() + 0.5
+            ShowMeMore.TawerUpdateTiming = GameTime + 0.5
           end
         end
       end
     end
-    if ShowMeMore.TawersTable and ShowMeMore.TawerUpdateTiming < GameRules.GetGameTime() then
+    if ShowMeMore.TawersTable and ShowMeMore.TawerUpdateTiming < GameTime then
       for i,j in pairs(ShowMeMore.TawersTable) do
         if j and Entity.IsEntity(i) then
           if not j.particle then
@@ -507,7 +526,7 @@ function ShowMeMore.OnProjectile(projectile)
   for tower,moreinfo in pairs(ShowMeMore.TawersTable) do
     if tower and moreinfo and tower == projectile.source then
       moreinfo.target = projectile.target
-      moreinfo.timer = GameRules.GetGameTime() + 1.2
+      moreinfo.timer = GameTime + 1.2
     end
   end
 end
@@ -551,7 +570,7 @@ function ShowMeMore.GetModifiersOnNps(npc)
     local TableMod = {}
     if NPC.GetModifiers(npc) then
         for _,mod in pairs(NPC.GetModifiers(npc)) do
-            if mod and Entity.IsAbility(Modifier.GetAbility(mod)) and Modifier.GetDieTime(mod) - GameRules.GetGameTime() > -0.01 then
+            if mod and Entity.IsAbility(Modifier.GetAbility(mod)) and Modifier.GetDieTime(mod) - GameTime > -0.01 then
                 table.insert(TableMod, mod)
             end
         end
@@ -575,6 +594,7 @@ function ShowMeMore.init()
   ShowMeMore.RoshanData = nil
   X1courier, Y1courier = 0, 0
   X2courier, Y2courier = 0, 0
+  GameTime = 0
 
   ShowMeMore.RoshanAlive = true
   ShowMeMore.InGame = false
@@ -591,13 +611,14 @@ function ShowMeMore.init()
   RoshanTimer = "particles/neutral_fx/roshan_timer.vpcf"
   Shivas = "particles/items_fx/aura_shivas.vpcf"
   TawerRing = "particles/ui_mouseactions/range_finder_tower_aoe.vpcf"	
-  CourierRadiant = Renderer.LoadImage("resource/flash3/images/items/courier_radiant.png")
-  CourierDire = Renderer.LoadImage("resource/flash3/images/items/courier_dire.png")
-  ShowMeMore.RoshanIMG = Renderer.LoadImage("resource/flash3/images/heroes/roshan.png")
-  TreantTreeIMG = Renderer.LoadImage("resource/flash3/images/spellicons/treant_eyes_in_the_forest.png")
-  PsionicTrapIMG = Renderer.LoadImage("resource/flash3/images/spellicons/templar_assassin_psionic_trap.png")
 
-  ShowMeMore.Font = Renderer.LoadFont("Tahoma", 30, Enum.FontWeight.EXTRABOLD)
+  CourierRadiant = nil
+  CourierDire = nil
+  ShowMeMore.RoshanIMG = nil
+  TreantTreeIMG = nil
+  PsionicTrapIMG = nil
+
+  ShowMeMore.Font = nil
   ShowMeMore.RoshanFont = nil
   ShowMeMore.RoshanFont2 = nil
   ShowMeMore.MissingHeroFont = nil
