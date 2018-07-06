@@ -39,10 +39,10 @@ ShowMeMore.MissingHeroOnMinimapActivation = Menu.AddOptionBool({"TheCrazy88","Sh
 ShowMeMore.MissingHeroKeyDraw = Menu.AddKeyOption({"TheCrazy88","ShowMeMore","Missing Hero","MiniMap Draw"},"Key Draw on MiniMap",Enum.ButtonCode.BUTTON_CODE_NONE)
 ShowMeMore.MissingHeroMiniMapSizeImg = Menu.AddOptionSlider({"TheCrazy88","ShowMeMore","Missing Hero","MiniMap Draw"},"Size IMG", 500, 1500, 1000)
 
-ShowMeMore.ShowMeEnemyActivation = Menu.AddOptionBool({"TheCrazy88","ShowMeMore","Visible By Enemy"},"Visible By Enemy Activation", false)
-ShowMeMore.ShowCourierActivation = Menu.AddOptionBool({"TheCrazy88","ShowMeMore","Visible By Enemy"},"Show Courier", false)
-ShowMeMore.ShowLaneCreepsActivation = Menu.AddOptionBool({"TheCrazy88","ShowMeMore","Visible By Enemy"},"Show Lane Creeps", false)
-ShowMeMore.ShowSummonsActivation = Menu.AddOptionBool({"TheCrazy88","ShowMeMore","Visible By Enemy"},"Show AllNPC", false)
+ShowMeMore.ShowMeEnemyActivation = Menu.AddOptionBool({"Awareness","Visible By Enemy","Creeps"},"Activation", false)
+ShowMeMore.ShowCourierActivation = Menu.AddOptionBool({"Awareness","Visible By Enemy","Creeps"},"Show Courier", false)
+ShowMeMore.ShowLaneCreepsActivation = Menu.AddOptionBool({"Awareness","Visible By Enemy","Creeps"},"Show Lane Creeps", false)
+ShowMeMore.ShowSummonsActivation = Menu.AddOptionBool({"Awareness","Visible By Enemy","Creeps"},"Show AllNPC", false)
 
 ShowMeMore.ShowTawerRange = Menu.AddOptionBool({"TheCrazy88","ShowMeMore","ShowTawerRange"},"ShowTawerRange Activation", true)
 ShowMeMore.ShowTawerRangeOnlyEnemy = Menu.AddOptionBool({"TheCrazy88","ShowMeMore","ShowTawerRange"},"Draw Allied Towers", false)
