@@ -65,6 +65,9 @@ ShowMeMore.ShowMeHidenEntitySizeImg = Menu.AddOptionSlider({"TheCrazy88","ShowMe
 ShowMeMore.ShowMeHidenEntityPsionicTrap = Menu.AddOptionBool({"TheCrazy88","ShowMeMore","Hiden Entity"},"Show Me Psionic Trap", true)
 ShowMeMore.ShowMeHidenEntityEyesInTheForest = Menu.AddOptionBool({"TheCrazy88","ShowMeMore","Hiden Entity"},"Show Me Eyes In The Forest", true)
 
+local GameTime = 0
+local MyHero = nil
+
 function ShowMeMore.OnDraw()
   if not ShowMeMore.InGame then return end
   if Menu.IsEnabled(ShowMeMore.ShowMeModifierTimer) then
@@ -596,8 +599,6 @@ function ShowMeMore.init()
   ShowMeMore.RoshanData = nil
   X1courier, Y1courier = 0, 0
   X2courier, Y2courier = 0, 0
-  GameTime = 0
-  MyHero = nil
 
   ShowMeMore.RoshanAlive = true
   ShowMeMore.InGame = false
