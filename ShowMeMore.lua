@@ -66,7 +66,7 @@ ShowMeMore.ShowMeHidenEntityPsionicTrap = Menu.AddOptionBool({"TheCrazy88","Show
 ShowMeMore.ShowMeHidenEntityEyesInTheForest = Menu.AddOptionBool({"TheCrazy88","ShowMeMore","Hiden Entity"},"Show Me Eyes In The Forest", true)
 
 function ShowMeMore.OnDraw()
-  if not ShowMeMore.InGame or not Heroes.GetLocal() then return end
+  if not ShowMeMore.InGame then return end
   if Menu.IsEnabled(ShowMeMore.ShowMeModifierTimer) then
     ShowMeMore.DrawModifierTimer()
   end
@@ -92,7 +92,7 @@ function ShowMeMore.OnDraw()
 end
 
 function ShowMeMore.OnUpdate()
-  if not Menu.IsEnabled(ShowMeMore.optionEnable) and not Heroes.Contains(Heroes.GetLocal()) then ShowMeMore.InGame = false return end
+  if not Menu.IsEnabled(ShowMeMore.optionEnable) or not Heroes.GetLocal() or not Engine.IsInGame() then ShowMeMore.InGame = false return end
   do
     if not ShowMeMore.Font then
       ShowMeMore.Font = Renderer.LoadFont("Tahoma", 30, Enum.FontWeight.EXTRABOLD)
@@ -126,6 +126,7 @@ function ShowMeMore.OnUpdate()
     end
   end
   GameTime = GameRules.GetGameTime()
+  MyHero = Heroes.GetLocal()
   ShowMeMore.TawerRange()
   ShowMeMore.DrawMissHeroTimer()
   ShowMeMore.RoshanTimer()
@@ -183,7 +184,7 @@ end
 
 function ShowMeMore.CourierInformation(npc)
   if Menu.IsEnabled(ShowMeMore.CourierActivation) and ShowMeMore.CanDrawCourier and (Menu.IsEnabled(ShowMeMore.CourierItembar) or Menu.IsEnabled(ShowMeMore.CourierItemPanel)) and NPC.IsCourier(npc) and Entity.IsAlive(npc) then
-    if (Menu.IsEnabled(ShowMeMore.CourierOnlyEnemy) and Entity.IsSameTeam(Heroes.GetLocal(), npc)) or not Entity.IsSameTeam(Heroes.GetLocal(), npc) then
+    if (Menu.IsEnabled(ShowMeMore.CourierOnlyEnemy) and Entity.IsSameTeam(MyHero, npc)) or not Entity.IsSameTeam(MyHero, npc) then
       local x,y = Renderer.WorldToScreen(Entity.GetAbsOrigin(npc))
       x = x - Menu.GetValue(ShowMeMore.CourierOffsetXitembar)
       y = y - Menu.GetValue(ShowMeMore.CourierOffsetYitembar)
@@ -255,7 +256,7 @@ function ShowMeMore.CourierInformation(npc)
 end
 
 function ShowMeMore.VisibilityByEnemies(npc)
-  if Menu.IsEnabled(ShowMeMore.ShowMeEnemyActivation) and not Entity.IsHero(npc) and Entity.IsAlive(npc) and Entity.IsSameTeam(Heroes.GetLocal(), npc) and NPC.IsVisibleToEnemies(npc) and not ShowMeEnemyTableParticle[npc] then
+  if Menu.IsEnabled(ShowMeMore.ShowMeEnemyActivation) and not Entity.IsHero(npc) and Entity.IsAlive(npc) and Entity.IsSameTeam(MyHero, npc) and NPC.IsVisibleToEnemies(npc) and not ShowMeEnemyTableParticle[npc] then
     if Menu.IsEnabled(ShowMeMore.ShowSummonsActivation) and NPC.IsCreep(npc) then
       ShowMeEnemyTableParticle[npc] = Particle.Create(Shivas, Enum.ParticleAttachment.PATTACH_ABSORIGIN_FOLLOW,npc)
     elseif Menu.IsEnabled(ShowMeMore.ShowLaneCreepsActivation) and NPC.IsLaneCreep(npc) then
@@ -267,7 +268,7 @@ function ShowMeMore.VisibilityByEnemies(npc)
 end
 
 function ShowMeMore.DrawHidenEntity(npc)
-  if Menu.IsEnabled(ShowMeMore.ShowMeHidenEntity) and not Entity.IsSameTeam(npc, Heroes.GetLocal()) then
+  if Menu.IsEnabled(ShowMeMore.ShowMeHidenEntity) and not Entity.IsSameTeam(npc, MyHero) then
     if NPC.GetUnitName(npc) == "npc_dota_templar_assassin_psionic_trap" or NPC.GetUnitName(npc) == "npc_dota_treant_eyes" then
       local x, y = Renderer.WorldToScreen(Entity.GetAbsOrigin(npc))
       local sizeimg = Menu.GetValue(ShowMeMore.ShowMeHidenEntitySizeImg)
@@ -285,8 +286,9 @@ end
 function ShowMeMore.RuneNotifier()
   if Menu.IsEnabled(ShowMeMore.RuneNotificationActivation) and GameRules.GetGameState() == 5 then
     local usertimer = Menu.GetValue(ShowMeMore.RuneNotificationTime)
-    local runetime = (GameTime - GameRules.GetGameStartTime() + 60 - usertimer) % 120
-    local bauntirune = (GameTime - GameRules.GetGameStartTime() + 60 - usertimer) % 300
+    local GameStartTime = GameRules.GetGameStartTime()
+    local runetime = (GameTime - GameStartTime + 60 - usertimer) % 120
+    local bauntirune = (GameTime - GameStartTime + 60 - usertimer) % 300
     local timecheck1 = runetime >= 0 and runetime < 0.5 or bauntirune >= 0 and bauntirune < 0.5
     local timecheck2 = runetime >= 0.5 and runetime < 1 or bauntirune >= 0.5 and bauntirune < 1
     if timecheck1 and not RuneNotif then
@@ -354,7 +356,7 @@ function ShowMeMore.DrawModifierTimer()
   for i = 0, #HeroesAll do
     local hero = HeroesAll[i]
     if hero and Entity.IsEntity(hero) and not NPC.IsIllusion(hero) and Entity.IsAlive(hero) and not Entity.IsDormant(hero) then
-      if (Menu.IsEnabled(ShowMeMore.ShowMeModifierTimerAlliesEnt) and Entity.IsSameTeam(Heroes.GetLocal(), hero)) or not Entity.IsSameTeam(Heroes.GetLocal(), hero) then
+      if (Menu.IsEnabled(ShowMeMore.ShowMeModifierTimerAlliesEnt) and Entity.IsSameTeam(MyHero, hero)) or not Entity.IsSameTeam(MyHero, hero) then
         local hasmodifier = ShowMeMore.GetModifiersOnNps(hero)
         local sizeimg = Menu.GetValue(ShowMeMore.ShowMeModifierTimerSizeIMG)
         local x, y = Renderer.WorldToScreen(Entity.GetAbsOrigin(hero))
@@ -402,7 +404,7 @@ function ShowMeMore.DrawMissHeroTimer()
     local HeroesAll = Heroes.GetAll()
     for i = 0, #HeroesAll do
       local j = HeroesAll[i]
-      if j and Entity.IsEntity(j) and not Entity.IsSameTeam(Heroes.GetLocal(),j) then
+      if j and Entity.IsEntity(j) and not Entity.IsSameTeam(MyHero,j) then
         if not ShowMeMore.MissingHeroTable[j] then
           ShowMeMore.MissingHeroTable[j] = {timer = 0, triger = false}
         end
@@ -476,7 +478,7 @@ function ShowMeMore.TawerRange()
           end
           ShowMeMore.TawersTable[tawer] = nil
         end
-        if not Menu.IsEnabled(ShowMeMore.ShowTawerRangeOnlyEnemy) and Entity.IsSameTeam(Heroes.GetLocal(), tawer) then
+        if not Menu.IsEnabled(ShowMeMore.ShowTawerRangeOnlyEnemy) and Entity.IsSameTeam(MyHero, tawer) then
           if tawerinfo.particle then
             Particle.Destroy(tawerinfo.particle)
             tawerinfo.particle = nil
@@ -491,7 +493,7 @@ function ShowMeMore.TawerRange()
       local j = NPCs.Get(i)
       if j and Entity.IsEntity(j) and NPC.IsStructure(j) and Entity.IsAlive(j) and NPC.IsTower(j) then
         if not ShowMeMore.TawersTable[j] then
-          if not Entity.IsSameTeam(j,Heroes.GetLocal()) or (Menu.IsEnabled(ShowMeMore.ShowTawerRangeOnlyEnemy) and Entity.IsSameTeam(j,Heroes.GetLocal())) then 
+          if not Entity.IsSameTeam(j,MyHero) or (Menu.IsEnabled(ShowMeMore.ShowTawerRangeOnlyEnemy) and Entity.IsSameTeam(j,MyHero)) then 
             ShowMeMore.TawersTable[j] = {}
             ShowMeMore.TawersTable[j].particle = nil
             ShowMeMore.TawersTable[j].target = nil
@@ -508,7 +510,7 @@ function ShowMeMore.TawerRange()
             j.particle = Particle.Create(TawerRing)
             Particle.SetControlPoint(j.particle, 2, Entity.GetOrigin(i))
             Particle.SetControlPoint(j.particle, 3, Vector(870, 0, 0))
-            if Heroes.GetLocal() and Entity.IsSameTeam(i,Heroes.GetLocal()) then
+            if MyHero and Entity.IsSameTeam(i,MyHero) then
               Particle.SetControlPoint(j.particle, 4, Vector(0, 255, 0))
             else
               Particle.SetControlPoint(j.particle, 4, Vector(255, 0, 0))
@@ -595,6 +597,7 @@ function ShowMeMore.init()
   X1courier, Y1courier = 0, 0
   X2courier, Y2courier = 0, 0
   GameTime = 0
+  MyHero = nil
 
   ShowMeMore.RoshanAlive = true
   ShowMeMore.InGame = false
